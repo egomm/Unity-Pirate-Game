@@ -17,8 +17,7 @@ public class CameraController : MonoBehaviour
     {
         transform.position = player.transform.position + offset;
         //transform.Rotate(0, 0, 1);
-        Debug.Log(90 + transform.rotation.eulerAngles.z - player.transform.rotation.eulerAngles.y);
         //transform.Rotate(0, 0, 90 + transform.rotation.eulerAngles.z - player.transform.rotation.eulerAngles.y); // doesnt work at all
-        transform.eulerAngles = new Vector3(90, 0, 90 - player.transform.rotation.eulerAngles.y);
+        transform.eulerAngles = new Vector3(90, player.transform.rotation.eulerAngles.y, 0);
     }
 }
