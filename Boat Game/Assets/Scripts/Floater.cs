@@ -7,7 +7,6 @@ public class Floater : MonoBehaviour
     public Rigidbody rigidBody;
     public float depth = 1f;
     public float displacement = 3f;
-    private float previousHeight = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -16,31 +15,29 @@ public class Floater : MonoBehaviour
     }
 
     // Update is called once per frame
-    void LateUpdate() // late update maybe?
+    void LateUpdate()
     {
         float waveHeight = WaveManager.instance.GetWaveHeight(transform.position.z);
-        float angle = (Mathf.PI/4)*Mathf.Cos(Mathf.PI*waveHeight/2)*180/Mathf.PI; // convert radians -> degrees
-        /*if (transform.position.y > previousHeight) { // height is increasing
-            angle = -angle;
-        }*/
-        if (WaveManager.instance.GetSin(transform.position.z) > 0) {
-            angle = -angle;
-        }
-        // if the player is going against the wave direction, change it
-        Debug.Log(transform.rotation.eulerAngles.y);
-        if (transform.rotation.eulerAngles.y > 90 && transform.rotation.eulerAngles.y < 270) {
-            angle = -angle;
-        }
-        //Debug.Log("WAVE HEIGHT: " + waveHeight + ", " + angle);
-        //Debug.Log(WaveManager.instance.GetSin(transform.position.z));
-        // Change the rotation accordingly
-        // FIX THIS SO IT DOES Y = 90 DEGREES???
-        transform.rotation = Quaternion.Euler(angle, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-        if (transform.position.y < waveHeight) {
+        float waveLength = WaveManager.instance.GetWaveLength();
+        float waveAmplitude = WaveManager.instance.GetAmplitude();
+        float waveCos = ConvertToDegrees(WaveManager.instance.GetCos(transform.position.z));
+        float multiplier = Mathf.Atan(2*waveAmplitude/waveLength);
+        // Mathf.PI/180 converts degrees to radians, gets the xAngle and zAngle based on the angle of the wave at the boats position
+        float xAngle = -(Mathf.Cos(ConvertToRadians(transform.rotation.eulerAngles.y)))*multiplier*waveCos; 
+        float zAngle = -(Mathf.Sin(ConvertToRadians(transform.rotation.eulerAngles.y)))*multiplier*waveCos;
+        // Rotates the boat based on the waves 
+        transform.rotation = Quaternion.Euler(xAngle, transform.rotation.eulerAngles.y, zAngle);
+        if (transform.position.y < waveHeight) { // Need to improve + make use for the displacement multiplier 
             float displacementMult = Mathf.Clamp01((waveHeight-transform.position.y) / depth) * displacement;
-            //Debug.Log("Displacement Multiplier: " + displacementMult);
             rigidBody.AddForce(new Vector3(0, Mathf.Abs(Physics.gravity.y) * displacement, 0), ForceMode.Acceleration);
         }   
-        previousHeight = transform.position.y;
+    }
+
+    private float ConvertToDegrees(float radians) { // This function converts radians into degrees (eg. pi = 180 degrees)
+        return radians*180/Mathf.PI;
+    }
+
+    private float ConvertToRadians(float degrees) {
+        return degrees*Mathf.PI/180;
     }
 }
