@@ -27,9 +27,9 @@ public class Floater : MonoBehaviour
         float zAngle = -(Mathf.Sin(ConvertToRadians(transform.rotation.eulerAngles.y)))*multiplier*waveCos;
         // Rotates the boat based on the waves 
         transform.rotation = Quaternion.Euler(xAngle, transform.rotation.eulerAngles.y, zAngle);
-        if (transform.position.y < waveHeight) { // Need to improve + make use for the displacement multiplier 
+        if (transform.position.y < waveHeight-(waveAmplitude/5)) { // Need to improve + make use for the displacement multiplier 
             float displacementMult = Mathf.Clamp01((waveHeight-transform.position.y) / depth) * displacement;
-            rigidBody.AddForce(new Vector3(0, Mathf.Abs(Physics.gravity.y) * displacement, 0), ForceMode.Acceleration);
+            rigidBody.AddRelativeForce(new Vector3(0, -Physics.gravity.y*2.75f, 0), ForceMode.Acceleration);
         }   
     }
 

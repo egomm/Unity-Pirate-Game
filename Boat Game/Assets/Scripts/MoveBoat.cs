@@ -24,7 +24,13 @@ public class MoveBoat : MonoBehaviour
     {
         float forwardInput = Input.GetAxis("Vertical");
         float horizontalInput = Input.GetAxis("Horizontal");
-        playerRb.AddRelativeForce(Vector3.forward * horsePower * forwardInput, ForceMode.Impulse);
+        Debug.Log(forwardInput);
+        playerRb.AddRelativeForce(Vector3.forward * horsePower * forwardInput, ForceMode.Acceleration);
+        Debug.Log(playerRb.velocity.x);
+        if (forwardInput <= 0) {
+             playerRb.velocity = Vector3.zero;
+        }
+
         transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * horizontalInput);
         speed = Mathf.RoundToInt(playerRb.velocity.magnitude*3.6f);
         // turn the speed into average speed
