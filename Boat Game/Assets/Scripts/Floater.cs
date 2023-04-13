@@ -20,6 +20,8 @@ public class Floater : MonoBehaviour
         float waveHeight = WaveManager.instance.GetWaveHeight(transform.position.z);
         float waveLength = WaveManager.instance.GetWaveLength();
         float waveAmplitude = WaveManager.instance.GetAmplitude();
+        float waveSpeed = WaveManager.instance.GetSpeed();  
+        //rigidBody.AddRelativeForce(new Vector3(0, 0, 0), ForceMode.VelocityChange);
         float waveCos = ConvertToDegrees(WaveManager.instance.GetCos(transform.position.z));
         float multiplier = Mathf.Atan(2*waveAmplitude/waveLength);
         // Mathf.PI/180 converts degrees to radians, gets the xAngle and zAngle based on the angle of the wave at the boats position
@@ -27,10 +29,16 @@ public class Floater : MonoBehaviour
         float zAngle = -(Mathf.Sin(ConvertToRadians(transform.rotation.eulerAngles.y)))*multiplier*waveCos;
         // Rotates the boat based on the waves 
         transform.rotation = Quaternion.Euler(xAngle, transform.rotation.eulerAngles.y, zAngle);
-        if (transform.position.y < waveHeight-(waveAmplitude/5)) { // Need to improve + make use for the displacement multiplier 
-            float displacementMult = Mathf.Clamp01((waveHeight-transform.position.y) / depth) * displacement;
-            rigidBody.AddRelativeForce(new Vector3(0, -Physics.gravity.y*2.75f, 0), ForceMode.Acceleration);
+        //Debug.Log(Mathf.Tan(WaveManager.instance.GetCos(transform.position.z)*multiplier));
+        if (transform.position.y < waveHeight-(waveAmplitude/5)) { // If the boat falls below 20% of the waves amplitude app the force
+            rigidBody.AddForce(new Vector3(0, -Physics.gravity.y*2.75f, 0), ForceMode.Acceleration); // Add an upward force to float the boat
         }   
+        if (transform.position.y < waveHeight-(5*waveAmplitude) && waveAmplitude > 0) {
+            Debug.Log("OCCURED: " + transform.position.y);
+            transform.position = new Vector3(transform.position.x, waveHeight, transform.position.z);
+        } else if (waveAmplitude == 0 && transform.position.y < -0.25) {
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        }
     }
 
     private float ConvertToDegrees(float radians) { // This function converts radians into degrees (eg. pi = 180 degrees)

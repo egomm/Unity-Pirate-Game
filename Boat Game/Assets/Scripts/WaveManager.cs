@@ -16,7 +16,7 @@ public class WaveManager : MonoBehaviour
         if (instance == null) {
             instance = this;
         } else {
-            Debug.Log("Instance already exists");
+            //Debug.Log("Instance already exists");
             Destroy(this);
         }
     }
@@ -47,5 +47,9 @@ public class WaveManager : MonoBehaviour
 
     public float GetAmplitude() {
         return amplitude;
+    }
+
+    public float GetSpeed() {
+        return speed;
     }
 }
