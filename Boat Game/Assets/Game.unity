@@ -932,8 +932,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBody: {fileID: 1915642710}
-  depth: 1
-  displacement: 3
 --- !u!65 &1915642709
 BoxCollider:
   m_ObjectHideFlags: 0

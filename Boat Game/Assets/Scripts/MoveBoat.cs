@@ -8,11 +8,11 @@ public class MoveBoat : MonoBehaviour
     [SerializeField] float speedMultiplier = 0;
     [SerializeField] float turnSpeed = 45;
     [SerializeField] float speed = 0;
+    [SerializeField] float maxSpeed = 4.167f;
     private Rigidbody playerRb;
     [SerializeField] GameObject centreOfMass;
-    [SerializeField] float maxSpeed = 4.167f;
     [SerializeField] TextMeshProUGUI speedometerText;
-    private bool test = false;
+    private bool deaccelerating = false;
     private bool finished = false;
     private bool xComplete = false;
     private bool zComplete = false;
@@ -24,86 +24,69 @@ public class MoveBoat : MonoBehaviour
     }
 
     void WaveVelocity() {
-        playerRb.AddForce(new Vector3(0, 0, -2f), ForceMode.VelocityChange);
+        float waveSpeed = WaveManager.instance.GetSpeed();
+        playerRb.AddForce(new Vector3(0, 0, -2*waveSpeed), ForceMode.VelocityChange);
     }
 
     // Update is called once per frame
-    void Update()   
-    {
-        //Debug.Log(playerRb.velocity.z);
+    void Update() {
+        // Get information about the wave
+        float waveSpeed = WaveManager.instance.GetSpeed();
         float waveAmplitude = WaveManager.instance.GetAmplitude();
-        float forwardInput = Input.GetAxis("Vertical");
-        float horizontalInput = Input.GetAxis("Horizontal");
-        playerRb.AddRelativeForce(Vector3.forward * speedMultiplier * forwardInput, ForceMode.Acceleration);
-        float velocity = Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2));
-        if (forwardInput <= 0 && !test && velocity > 0 && !finished) {
-            test = true;
-            Debug.Log("TEST!");
+        float forwardInput = Input.GetKey(KeyCode.W) ? 1 : 0; // Controls the boat's forward movement
+        float horizontalInput = Input.GetKey(KeyCode.D) ? 1 : 0;// Controls the boat's right movement
+        if (Input.GetKey(KeyCode.A)) { // Controls the boat's left movement
+            horizontalInput--;
         }
-        if (forwardInput > 0) {
-            test = false;
+        playerRb.AddRelativeForce(Vector3.forward * speedMultiplier * forwardInput, ForceMode.Acceleration); // Accelerate boat forward relative to the boat's direction
+        transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * horizontalInput); // Rotate the boat
+        float velocity = Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2)); // xz velocity
+        // If the player isn't inputting any forward movement, deaccelerate the boat until it has stopped or the player inputs forward movement again
+        if (forwardInput == 0 && !deaccelerating && velocity > 0 && !finished) {
+            deaccelerating = true;
+        }
+        if (forwardInput != 0) {
+            deaccelerating = false;
             finished = false;
         }
-        if (test) {
-            Debug.Log(playerRb.velocity.x + ", " + playerRb.velocity.z);
-            if (!zComplete) {
-                if (playerRb.velocity.z > -1.95) {
-                    playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, playerRb.velocity.z-Time.deltaTime);
-                } else if (playerRb.velocity.z < -2.05) {
-                    playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, playerRb.velocity.z+Time.deltaTime);
-                } else {
-                    playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, -2);
-                    zComplete = true;
-                }
-            }
-            if (!xComplete) {
-                Debug.Log("X NOT COMPLETE!");
-                if (playerRb.velocity.x > 0.05) {
-                    playerRb.velocity = new Vector3(playerRb.velocity.x-(Time.deltaTime), playerRb.velocity.y, playerRb.velocity.z);
-                } else if (playerRb.velocity.x < -0.05) {
-                    playerRb.velocity = new Vector3(playerRb.velocity.x+(Time.deltaTime), playerRb.velocity.y, playerRb.velocity.z);
-                } else {
+        // Deacceleration mechanism
+        if (deaccelerating) {
+            if (!xComplete) { // Deaccelerate the boat on the x component
+                if (playerRb.velocity.x > (0.05*maxSpeed/4)) {
+                    playerRb.velocity = new Vector3(playerRb.velocity.x-(Time.deltaTime*maxSpeed/4), playerRb.velocity.y, playerRb.velocity.z);
+                } else if (playerRb.velocity.x < -(0.05*maxSpeed/4)) {
+                    playerRb.velocity = new Vector3(playerRb.velocity.x+(Time.deltaTime*maxSpeed/4), playerRb.velocity.y, playerRb.velocity.z);
+                } else { // Check if the boat has finished deaccelerating on the x component
                     playerRb.velocity = new Vector3(0, playerRb.velocity.y, playerRb.velocity.z);
                     xComplete = true;
                 }
             }
-
-            if (xComplete && zComplete) {
+            if (!zComplete) { // Deaccelerate the boat on the z component
+                if (playerRb.velocity.z > -2*waveSpeed+(0.05*maxSpeed/4)) {
+                    playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, playerRb.velocity.z-(Time.deltaTime*maxSpeed/4));
+                } else if (playerRb.velocity.z < -2*waveSpeed-(0.05*maxSpeed/4)) {
+                    playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, playerRb.velocity.z+(Time.deltaTime*maxSpeed/4));
+                } else { // Check if the boat has finished deaccelerating on the z component
+                    playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, -2*waveSpeed);
+                    zComplete = true;
+                }
+            }
+            if (xComplete && zComplete) { // If finished deaccelerating on the x and z components, stop checking for deacceleration
                 xComplete = false;
                 zComplete = false;
-                test = false;
+                deaccelerating = false;
                 finished = true;
-                Debug.Log("DONE!");
             }
         }
-
-        /*if (forwardInput <= 0 && !test && Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2)) > 0) {
-             test = true;
-             Debug.Log("CALLED TEST");
-             Debug.Log("OG: " + Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2)));
-             //playerRb.AddRelativeForce(Vector3.forward * speedMultiplier * forwardInput, ForceMode.Acceleration);
-        }
-        if (test) {
-            Debug.Log("FINAL: " + Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2)));
-            Debug.Log(Time.deltaTime);
-            if (playerRb.velocity.z > 0) {
-                playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, playerRb.velocity.z-Time.deltaTime);
-            } else {
-                playerRb.velocity = new Vector3(playerRb.velocity.x, playerRb.velocity.y, 0);
-                test = false;
-            }
-        }*/
-        //playerRb.velocity = new Vector3(0, 0, -2f);
-        transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * horizontalInput);
-        speed = Mathf.RoundToInt(playerRb.velocity.magnitude*3.6f);
-        if (playerRb.velocity.y > 2*waveAmplitude) {
+        speed = Mathf.RoundToInt(playerRb.velocity.magnitude*3.6f); // boat speed
+        if (playerRb.velocity.y > 2*waveAmplitude) { // limit the boat's y velocity (will help prevent the boat sinking too much)
             playerRb.velocity = new Vector3(playerRb.velocity.x, 2*waveAmplitude, playerRb.velocity.z);
         }
-        velocity = Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2));
-        //Debug.Log(2*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)));
-        if (velocity+2*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)) > maxSpeed) {
-            playerRb.velocity = playerRb.velocity.normalized * (maxSpeed-2*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)));
-            speed = Mathf.RoundToInt((maxSpeed-2*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)))*3.6f);
+        velocity = Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2)); // new xz velocity
+        // Ensure that the player isn't going over the max speed (determined by the boat, the waves, and the direction the boat is travelling)
+        if (velocity+2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)) > maxSpeed) {
+            playerRb.velocity = playerRb.velocity.normalized * (maxSpeed-2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)));
+            speed = Mathf.RoundToInt((maxSpeed-2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)))*3.6f);
         }
         speedometerText.SetText("Speed: " + speed + " kmph");
     }
