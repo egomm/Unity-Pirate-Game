@@ -20,7 +20,7 @@ public class InitalisePrefab : MonoBehaviour
     
     void ManagePrefabs() {
         GameObject component = GameObject.Find("Ocean(Clone)");
-        component.GetComponent<WaveManager>().amplitude += 0.02f;
+        component.GetComponent<WaveManager>().amplitude += 0.002f;
         if (component.GetComponent<WaveManager>().amplitude <= 1) { 
             Invoke("ManagePrefabs", 0.2f);
         } else {
