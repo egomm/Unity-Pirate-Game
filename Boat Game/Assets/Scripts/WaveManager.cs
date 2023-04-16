@@ -57,4 +57,8 @@ public class WaveManager : MonoBehaviour
     public float GetSpeed() {
         return speed;
     }
+
+    public float GetOffset() {
+        return offset;
+    }
 }
