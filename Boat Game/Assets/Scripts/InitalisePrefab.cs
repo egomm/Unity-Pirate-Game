@@ -9,8 +9,7 @@ public class InitalisePrefab : MonoBehaviour
 	public List<xzCoordinates> centres = new List<xzCoordinates>();
 	public Dictionary<xzCoordinates, GameObject[]> prefabs = new Dictionary<xzCoordinates, GameObject[]>();
 	// Start is called before the first frame update
-	void Start()
-	{
+	void Start() {
 		ocean.GetComponent<WaveManager>().amplitude = 1; // Initalise the prefab information
 		ocean.GetComponent<WaveManager>().offset = 0;
 		for (int x = -2; x <= 2; x++) { // Initially spawn a 80x80 square 
