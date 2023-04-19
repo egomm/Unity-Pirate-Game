@@ -112,10 +112,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1292d47d20a32214ba9533a06bd5395c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amplitude: 1
+  amplitude: 0
   length: 4
-  speed: 1
-  offset: 19.774946
+  speed: 0
+  offset: 54.090584
 --- !u!114 &1253786579061247137
 MonoBehaviour:
   m_ObjectHideFlags: 0
