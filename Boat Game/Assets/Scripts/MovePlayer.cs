@@ -9,6 +9,7 @@ public class MovePlayer : MonoBehaviour {
     private float turnSpeed = 50f;
     public bool isOnGround = true;
     Vector3 movement;
+    Vector3 centre = new Vector3(250, 0, 250);
 
     // Start is called before the first frame update
     void Start() {
@@ -31,17 +32,17 @@ public class MovePlayer : MonoBehaviour {
             isOnGround = false;
         }
         playerAnim.SetBool("moving", Input.GetAxis("Vertical") > 0); // Set animation if player is moving forward
-        if (distanceFromCentre() > 25) { // If the player is more than 25 units from the centre
+        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(centre.x, centre.z)) > 25) { // If the player is more than 25 units from the centre
             float angle = 0;
             float multiplier = 25;
             if (playerRb.position.x != 0) { // To avoid dividing my 0 
-                angle = Mathf.Atan(playerRb.position.z/playerRb.position.x);
-                multiplier = 25*playerRb.position.x/Mathf.Abs(playerRb.position.x);
+                angle = Mathf.Atan((playerRb.position.z-centre.z)/(playerRb.position.x-centre.x));
+                multiplier = 25*(playerRb.position.x-centre.x)/Mathf.Abs(playerRb.position.x-centre.x);
             }
             // Get the new player positions based on trig
             float newPlayerX = multiplier*Mathf.Cos(angle);
             float newPlayerZ = multiplier*Mathf.Sin(angle);
-            playerRb.position = new Vector3(newPlayerX, playerRb.position.y, newPlayerZ);
+            playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);
         }
     }
 
@@ -50,9 +51,9 @@ public class MovePlayer : MonoBehaviour {
         playerRb.MovePosition(playerRb.position + direction * movementSpeed * Time.fixedDeltaTime); // using the fixed delta time as this is called from the FixedUpdate() method
     }
 
-    private float distanceFromCentre() { // Assuming centre is (0, 0) - temporary
-        return Mathf.Sqrt(Mathf.Pow(playerRb.position.x, 2) + Mathf.Pow(playerRb.position.z, 2));
-    }
+    /*private float distanceFromCentre() { // Assuming centre is (0, 0) - temporary
+        return Mathf.Sqrt(Mathf.Pow(playerRb.position.x - centre.x, 2) + Mathf.Pow(playerRb.position.z - centre.z, 2));
+    }*/
 
     private void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.CompareTag("Island")) {
