@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InitalisePrefab : MonoBehaviour
-{
-
-	public GameObject ocean;
+public class InitalisePrefab : MonoBehaviour {
+	public GameObject ocean; // For the ocean
+	public GameObject seafloor; // For the sea floor
 	public List<xzCoordinates> centres = new List<xzCoordinates>();
 	public Dictionary<xzCoordinates, GameObject[]> prefabs = new Dictionary<xzCoordinates, GameObject[]>();
+	public Dictionary<xzCoordinates, GameObject[]> seaFloorPrefabs = new Dictionary<xzCoordinates, GameObject[]>();
 	// Start is called before the first frame update
 	void Start() {
 		ocean.GetComponent<WaveManager>().amplitude = 0; // Initalise the prefab information
@@ -23,7 +23,7 @@ public class InitalisePrefab : MonoBehaviour
 	}
 	
 	void ManagePrefabs() { // In this case, the ampltidue of the waves are decreasing from 1 to 0
-		GameObject component = GameObject.Find("Ocean(Clone)");
+		GameObject component = GameObject.Find("Ocean(Clone)"); // Find the ocean prefabs
 		if (component.GetComponent<WaveManager>().amplitude > 0) { 
 			component.GetComponent<WaveManager>().amplitude -= 0.05f;
 			ocean.GetComponent<WaveManager>().amplitude -= 0.05f;
@@ -48,33 +48,42 @@ public class InitalisePrefab : MonoBehaviour
 	// Method for spawning a 2x2 prefab square (4 prefabs)
 	void spawnBigSquare(int centreX, int centreZ) {
 		GameObject[] components = new GameObject[4];
+		GameObject[] seafloorcomponents = new GameObject[4];
 		int i = 0;
 		for (int x = -1; x <= 1; x+=2) {
 			for (int z = -1; z <= 1; z+=2) {
 				GameObject component = Instantiate(ocean, new Vector3(centreX+5*x, 0, centreZ+5*z), Quaternion.identity);
 				components[i] = component; // Add to an array of all of the prefabs in this square
+				GameObject seafloorcomponent = Instantiate(seafloor, new Vector3(centreX+5*x, -3, centreZ+5*z), Quaternion.identity);
+				seafloorcomponents[i] = seafloorcomponent;
 				i++;
 			}
 		}
 		prefabs.Add(new xzCoordinates(centreX, centreZ), components); // Add information about the big square to the dictionary
+		seaFloorPrefabs.Add(new xzCoordinates(centreX, centreZ), seafloorcomponents);
 	}
 
 	// Method for destroying squares more than x units away from the boat
 	void destoryFarCentres() {
 		GameObject boat = GameObject.Find("Boat"); 
-		float boatX = boat.transform.position.x;
-		float boatZ = boat.transform.position.z;
+		Vector2 boatXZ = new Vector2(boat.transform.position.x, boat.transform.position.z);
+		destroyCentres(boatXZ, prefabs); // Ocean prefabs
+		destroyCentres(boatXZ, seaFloorPrefabs); // Sea floor
+		Invoke("destoryFarCentres", 0.25f); // Recur the method
+	}
+
+	void destroyCentres(Vector2 boatCoordinates, Dictionary<xzCoordinates, GameObject[]> prefabsToDestory) {
 		List<xzCoordinates> toRemove = new List<xzCoordinates>();
-		foreach (var item in prefabs) { // Iterate over the prefabs
-			if (twoDimensionalDistance(boatX, boatZ, item.Key.x, item.Key.z) > 50) { 
+		foreach (var item in prefabsToDestory) { // Iterate over the prefabs
+			if (Vector2.Distance(boatCoordinates, new Vector2(item.Key.x, item.Key.z)) > 50) { 
 				toRemove.Add(item.Key); // remove this after (otherwise will cause issues if iterating while removing)
 				for (int i = 0; i < item.Value.Length; i++) {
-					Destroy(item.Value[i]); // Destory the prefabs (of the big square) if the big square is more than x units away from the boat
+					Destroy(item.Value[i]); // Destory the prefabs (of the big square) if the big square is more than x units away from the 
 				}
 			}
 		}
 		foreach (xzCoordinates key in toRemove) { // Remove the key from the dictionary and the array
-			prefabs.Remove(key);
+			prefabsToDestory.Remove(key);
 			int index = 0;
 			foreach (xzCoordinates centre in centres) {
 				if (centre.x == key.x && centre.z == key.z) { // .Contains() won't work here as I am comparing custom constructors
@@ -84,7 +93,6 @@ public class InitalisePrefab : MonoBehaviour
 				index++;
 			}
 		}
-		Invoke("destoryFarCentres", 0.25f); // Recur the method
 	}
 
 	void checkNearestCentres() {
@@ -97,7 +105,7 @@ public class InitalisePrefab : MonoBehaviour
 			for (int z = (normalisedZ-1); z <= (normalisedZ+1); z++) {
 				int centreX = 20*x;
 				int centreZ = 20*z;
-				if (twoDimensionalDistance(boatX, boatZ, centreX, centreZ) < 30) { // If the boat is less than 30 units from the centre initalise the square 
+				if (twoDimensionalDistance(boatX, boatZ, centreX, centreZ) < 40) { // If the boat is less than 40 units from the centre initalise the square 
 					bool contains = false;
 					foreach (xzCoordinates centre in centres) { // .Contains() will not work here as I am comparing custom constructors
 						if (centre.x == centreX && centre.z == centreZ) {
