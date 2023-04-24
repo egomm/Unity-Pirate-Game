@@ -1474,7 +1474,7 @@ BoxCollider:
   m_GameObject: {fileID: 1830378609}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1522,6 +1522,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa1067d4960f3574caff3d2c38687a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeIslands: []
+  island: {fileID: 5542557019732388581, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
+  dock: {fileID: 6594003201089454466, guid: 159b7deb2e40f2b4ca7b658e225813b9, type: 3}
 --- !u!4 &1868422335
 Transform:
   m_ObjectHideFlags: 0
@@ -1553,7 +1556,7 @@ GameObject:
   - component: {fileID: 1915642709}
   m_Layer: 0
   m_Name: Boat
-  m_TagString: Untagged
+  m_TagString: Boat
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1629,7 +1632,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 500
   m_Drag: 0
-  m_AngularDrag: 0
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
