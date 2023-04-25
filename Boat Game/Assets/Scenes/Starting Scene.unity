@@ -884,5 +884,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 7464966888189851392, guid: af372a7f84b9e5d4aa591acf5c548771, type: 3}
+      propertyPath: m_Name
+      value: Palm Tree
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af372a7f84b9e5d4aa591acf5c548771, type: 3}

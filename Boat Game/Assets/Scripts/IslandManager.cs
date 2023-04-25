@@ -8,6 +8,12 @@ public class IslandManager : MonoBehaviour {
     public static Dictionary<Vector3, Dictionary<string, object>> islandInformation = new Dictionary<Vector3, Dictionary<string, object>>();
     public GameObject island;
     public GameObject dock;
+    public GameObject palmTree;
+    public GameObject coconutObject;
+    public GameObject rockObject;
+    public GameObject plantObject;
+    public GameObject chestObject;
+
     // Start is called before the first frame update
     void Start() {
         // Need to generate a starting island sometime?
@@ -36,7 +42,8 @@ public class IslandManager : MonoBehaviour {
                 palm tree position(s) + rotation(s), 
                 coconut positions(s) + rotation(s) - must be near palm tree,
                 rock position(s) + rotation(s), 
-                plant position(s) + rotation(s)*/
+                plant position(s) + rotation(s),
+                chest position(s) + rotation(s)*/
                 float islandAngle = Random.Range(0, 2*Mathf.PI);
                 // At a scale of 1, the dock needs to be 4 blocks out 
                 float dockScaleX = Random.Range(0.8f, 1f) * radius/15f; // Maximum will be 1.33 - Depend on randomisation + the radius
@@ -69,15 +76,201 @@ public class IslandManager : MonoBehaviour {
                 float dockConstant = 13*dockScaleX/3;
                 float dockX = (dockMagnitude+dockConstant)*Mathf.Sin(islandAngle-(Mathf.PI/2));
                 float dockZ = (dockMagnitude+dockConstant)*Mathf.Cos(islandAngle-(Mathf.PI/2));
-                Debug.Log(islandAngle*180/Mathf.PI);
+                float maxDockDistance = Mathf.Sqrt(Mathf.Pow(2.7f*dockX, 2) + Mathf.Pow(4f*dockZ, 2)); // may not be used?
+                //Debug.Log(islandAngle*180/Mathf.PI);
                 float dockAngle = islandAngle*180/Mathf.PI;
                 Vector3 dockCoordinates = new Vector3(dockX, 0.75f, dockZ); 
+                // Need to generate palm tree positions -> (x^2+z^2)/a^2 + y^2/b^2 = 1 -> b is 1/2 the height -> a = radius
+                // Allow the tree to be on an angle, but must be facing outwards
+                List<List<Vector3>> palmTreeCoconutCoordinates = new List<List<Vector3>>();
+                List<List<Vector3>> palmTreeCoconutAngles = new List<List<Vector3>>();
+                List<Vector3> palmTreeCoordinates = new List<Vector3>();
+                List<Vector2> palmTreeAngles = new List<Vector2>();
+                int palmTreeCount = (int) Mathf.Round(Random.Range((3*radius/4), (5*radius/4))); // On a island with radius of 10, generate 5-10 palm trees
+                for (int j = 0; j < palmTreeCount; j++) {
+                    float palmTreeAngle = Random.Range(0, 2*Mathf.PI);
+                    float palmTreeMagnitude = Random.Range(0, (radius*0.95f)); // Generate a magnitude between 0 and 95% of the radius
+                    float palmTreeX = palmTreeMagnitude*Mathf.Cos(palmTreeAngle);
+                    float palmTreeZ = palmTreeMagnitude*Mathf.Sin(palmTreeAngle);
+                    float palmTreeChange = (Mathf.Pow(palmTreeX, 2) + Mathf.Pow(palmTreeZ, 2))/Mathf.Pow(radius, 2);
+                    float palmTreeConstantAngle = Random.Range(-Mathf.PI/6, Mathf.PI/6);
+                    float palmTreeConstant = Mathf.Abs(Mathf.Sin(palmTreeConstantAngle))*0.15f; // Will generate between 0 and 0.075
+                    float palmTreeY = Mathf.Sqrt(1-palmTreeChange)*(height/2) - palmTreeConstant;
+                    Vector3 palmTreeCoordinate = new Vector3(palmTreeX, palmTreeY, palmTreeZ);
+                    float palmTreeXAngle = palmTreeConstantAngle*180/Mathf.PI;
+                    float palmTreeYAngle = palmTreeAngle*180/Mathf.PI;
+                    // Add to list
+                    // FIRSTLY CHECK IF THERE ARE ANY OTHER PALM TREES NEARBY
+                    bool canPlacePalmTree = true;
+                    for (int k = 0; k < palmTreeCoordinates.Count; k++) {
+                        float oldAngle = palmTreeAngles[k].x*Mathf.PI/180;
+                        float maximum = 5;
+                        if (Vector3.Distance(islandCoordinate, palmTreeCoordinate) > Vector3.Distance(islandCoordinate, palmTreeCoordinates[k])) { // New palm tree is further out
+                            maximum = 5+3*(Mathf.Sin(oldAngle)-Mathf.Sin(palmTreeConstantAngle)); // 6+4(sin(old)-sin(new)) 
+                        } else { // New palm tree is closer
+                            maximum = 5+3*(Mathf.Sin(palmTreeConstantAngle)-Mathf.Sin(oldAngle));
+                        }
+                        if (Vector3.Distance(palmTreeCoordinate, palmTreeCoordinates[k]) < maximum) {
+                            canPlacePalmTree = false;
+                            j--; // go back one index
+                            break;
+                        }
+                    }
+                    if (canPlacePalmTree) {
+                        // Chance of coconuts around the base of the palm tree
+                        int coconutCount = Random.Range(0, 4); // Spawn between 0 and 3 coconuts (this function is inclusive)
+                        List<Vector3> coconutCoordinates = new List<Vector3>();
+                        List<Vector3> coconutAngles = new List<Vector3>();
+                        for (int k = 0; k < coconutCount; k++) {
+                            // Spawn the coconut 1-2 units from the tree at a random angle -> combined coconuts exist so it doesnt matter too much if they overlap (lodoicea)
+                            // All of this is relative to the palm tree
+                            float coconutAngle = Random.Range(0, 2*Mathf.PI);
+                            float coconutMagnitude = Random.Range(0.5f, 1f);
+                            float coconutX = coconutMagnitude*Mathf.Cos(coconutAngle);
+                            float coconutZ = coconutMagnitude*Mathf.Sin(coconutAngle);
+                            Vector3 coconutPosition = palmTreeCoordinate + new Vector3(coconutX, 0, coconutZ); // make the y depend on from the centre
+                            if (Vector2.Distance(new Vector2(coconutPosition.x, coconutPosition.z), new Vector2(0, 0)) < 0.95f*radius) {
+                                float randomCoconutAngle = Random.Range(0f, 360f);
+                                coconutAngles.Add(new Vector3(0, randomCoconutAngle, 0));
+                                coconutCoordinates.Add(coconutPosition);
+                            } else {
+                                k--;
+                            }
+                        }
+                        if (coconutCoordinates.Count > 0) {
+                            palmTreeCoconutCoordinates.Add(coconutCoordinates);
+                            palmTreeCoconutAngles.Add(coconutAngles);
+                        }
+                        palmTreeCoordinates.Add(palmTreeCoordinate);
+                        palmTreeAngles.Add(new Vector2(palmTreeXAngle, palmTreeYAngle));
+                    } 
+                }
+                // Do the rocks now
+                List<Vector3> rockCoordinates = new List<Vector3>();
+                List<Vector3> rockAngles = new List<Vector3>();
+                int rockCount = (int) Mathf.Round(Random.Range((3*radius/2), (3*radius)));
+                for (int j = 0; j < rockCount; j++) { // Allow overlapping rocks (they look cool)
+                    float rockAngle = Random.Range(0, 2*Mathf.PI);
+                    float rockAngleMangitude = Random.Range(0, (radius*0.95f));
+                    float rockX = rockAngleMangitude*Mathf.Cos(rockAngle);
+                    float rockZ = rockAngleMangitude*Mathf.Sin(rockAngle);
+                    float rockChange = (Mathf.Pow(rockX, 2) + Mathf.Pow(rockZ, 2))/Mathf.Pow(radius, 2);
+                    float rockY = Mathf.Sqrt(1-rockChange)*(height/2) - 0.1f;
+                    bool canPlaceRock = true;
+                    foreach (var palmTreeCoordinate in palmTreeCoordinates) {
+                        if (Vector2.Distance(new Vector2(rockX, rockZ), new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 1.5f) {
+                            canPlaceRock = false;
+                            j--; // go back one index
+                            break;
+                        }
+                    }
+                    if (canPlaceRock) {
+                        float randomRockAngle = Random.Range(0f, 360f);
+                        rockAngles.Add(new Vector3(0, randomRockAngle, 0));
+                        rockCoordinates.Add(new Vector3(rockX, rockY, rockZ));
+                    }
+                }
+                // Do the plants now
+                List<Vector3> plantCoordinates = new List<Vector3>();
+                List<Vector3> plantAngles = new List<Vector3>();
+                int plantCount = (int) Mathf.Round(Random.Range((2*radius), (4*radius)));
+                for (int j = 0; j < plantCount; j++) { // Don't allow directly overlapping plants 
+                    float plantAngle = Random.Range(0, 2*Mathf.PI);
+                    float plantAngleMangitude = Random.Range(0, (radius*0.95f));
+                    float plantX = plantAngleMangitude*Mathf.Cos(plantAngle);
+                    float plantZ = plantAngleMangitude*Mathf.Sin(plantAngle);
+                    float plantChange = (Mathf.Pow(plantX, 2) + Mathf.Pow(plantZ, 2))/Mathf.Pow(radius, 2);
+                    float plantY = Mathf.Sqrt(1-plantChange)*(height/2) - 0.05f;
+                    bool canPlacePlant = true;
+                    foreach (var palmTreeCoordinate in palmTreeCoordinates) {
+                        if (Vector2.Distance(new Vector2(plantX, plantZ), new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 1.5f) {
+                            canPlacePlant = false;
+                            j--; // go back one index
+                            break;
+                        }
+                    }
+                    if (canPlacePlant) {
+                        foreach (var rockCoordinate in rockCoordinates) {
+                            if (Vector2.Distance(new Vector2(plantX, plantZ), new Vector2(rockCoordinate.x, rockCoordinate.z)) < 1f) {
+                                canPlacePlant = false;
+                                j--; // go back one index
+                                break;
+                            }
+                        }
+                        if (canPlacePlant) {
+                            foreach (var plantCoordinate in plantCoordinates) {
+                                if (Vector2.Distance(new Vector2(plantX, plantZ), new Vector2(plantCoordinate.x, plantCoordinate.z)) < 0.5f) {
+                                    canPlacePlant = false;
+                                    j--; // go back one index
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (canPlacePlant) {
+                        float randomPlantAngle = Random.Range(0f, 360f);
+                        plantAngles.Add(new Vector3(0, randomPlantAngle, 0));
+                        plantCoordinates.Add(new Vector3(plantX, plantY, plantZ));
+                    }
+                }
+                // Do the chests now
+                List<Vector3> chestCoordinates = new List<Vector3>();
+                List<Vector3> chestAngles = new List<Vector3>();
+                int chestCount = (int) Mathf.Round(Random.Range(radius/10, radius/5));
+                for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, allow chests to overlap plants 
+                    float chestAngle = Random.Range(0, 2*Mathf.PI);
+                    float chestAngleMangitude = Random.Range(0, (radius/2)); // must be somewhat close to the centre
+                    float chestX = chestAngleMangitude*Mathf.Cos(chestAngle);
+                    float chestZ = chestAngleMangitude*Mathf.Sin(chestAngle);
+                    float chestChange = (Mathf.Pow(chestX, 2) + Mathf.Pow(chestZ, 2))/Mathf.Pow(radius, 2);
+                    float chestY = Mathf.Sqrt(1-chestChange)*(height/2) - 0.1f;
+                    bool canPlaceChest = true;
+                    foreach (var palmTreeCoordinate in palmTreeCoordinates) {
+                        if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 2.5f) {
+                            canPlaceChest = false;
+                            j--; // go back one index
+                            break;
+                        }
+                    }
+                    if (canPlaceChest) {
+                        foreach (var rockCoordinate in rockCoordinates) {
+                            if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(rockCoordinate.x, rockCoordinate.z)) < 1.5f) {
+                                canPlaceChest = false;
+                                j--; // go back one index
+                                break;
+                            }
+                        }
+                        if (canPlaceChest) {
+                            foreach (var chestCoordinate in chestCoordinates) {
+                                if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(chestCoordinate.x, chestCoordinate.z)) < 1.5f) {
+                                    canPlaceChest = false;
+                                    j--; // go back one index
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (canPlaceChest) {
+                        float randomChestAngle = Random.Range(0f, 360f);
+                        chestAngles.Add(new Vector3(0, randomChestAngle, 0));
+                        chestCoordinates.Add(new Vector3(chestX, chestY, chestZ));
+                    }
+                }
                 informationDictionary.Add("radius", radius);
                 informationDictionary.Add("height", height);
                 informationDictionary.Add("dockangle", dockAngle);
                 informationDictionary.Add("dockscale", dockScale);
                 informationDictionary.Add("dockcoordinates", dockCoordinates);
-
+                informationDictionary.Add("palmtreecoordinates", palmTreeCoordinates);
+                informationDictionary.Add("palmtreeangles", palmTreeAngles);
+                informationDictionary.Add("coconutcoordinates", palmTreeCoconutCoordinates);
+                informationDictionary.Add("coconutangles", palmTreeCoconutAngles);
+                informationDictionary.Add("rockcoordinates", rockCoordinates);
+                informationDictionary.Add("rockangles", rockAngles);
+                informationDictionary.Add("plantcoordinates", plantCoordinates);
+                informationDictionary.Add("plantangles", plantAngles);
+                informationDictionary.Add("chestcoordinates", chestCoordinates);
+                informationDictionary.Add("chestangles", chestAngles);
                 islandInformation.Add(islandCoordinate, informationDictionary);
             } else { // Go back by an index if the island is in range of another island
                 i--;
@@ -105,6 +298,43 @@ public class IslandManager : MonoBehaviour {
                 // Spawn the dock at the correct angle
                 GameObject spawnedDock = Instantiate(dock, (coordinate + (Vector3) islandInformation[coordinate]["dockcoordinates"]), Quaternion.Euler(new Vector3(0, (float) islandInformation[coordinate]["dockangle"], 0)));
                 spawnedDock.transform.localScale = (Vector3) islandInformation[coordinate]["dockscale"];
+                List<Vector3> palmTreeCoordinates = (List<Vector3>) islandInformation[coordinate]["palmtreecoordinates"];
+                List<Vector2> palmTreeAngles = (List<Vector2>) islandInformation[coordinate]["palmtreeangles"]; // These will both be the same length 
+                for (int i = 0; i < palmTreeCoordinates.Count; i++) { 
+                    Vector3 palmTreeCoordinate = palmTreeCoordinates[i];
+                    Vector2 palmTreeAngle = palmTreeAngles[i];
+                    GameObject spawnedPalmTree = Instantiate(palmTree, coordinate + palmTreeCoordinate, Quaternion.Euler(palmTreeAngle.x, palmTreeAngle.y, 0));
+                }
+                List<List<Vector3>> coconutCoordinates = (List<List<Vector3>>) islandInformation[coordinate]["coconutcoordinates"];
+                List<List<Vector3>> coconutAngles = (List<List<Vector3>>) islandInformation[coordinate]["coconutangles"];
+                for (int i = 0; i < coconutCoordinates.Count; i++) {
+                    for (int j = 0; j < coconutCoordinates[i].Count; j++) {
+                        GameObject spawnedCoconut = Instantiate(coconutObject, (coordinate + coconutCoordinates[i][j]), Quaternion.Euler(coconutAngles[i][j]));
+                        spawnedCoconut.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    }
+                }
+                foreach (var coconutList in coconutCoordinates) {
+                    foreach (var coconut in coconutList) {
+                        float randomCoconutAngle = Random.Range(0f, 360f);
+                        GameObject spawnedCoconut = Instantiate(coconutObject, (coordinate + coconut), Quaternion.Euler(new Vector3(0, randomCoconutAngle, 0)));
+                        spawnedCoconut.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    }
+                }
+                List<Vector3> rockCoordinates = (List<Vector3>) islandInformation[coordinate]["rockcoordinates"];
+                List<Vector3> rockAngles = (List<Vector3>) islandInformation[coordinate]["rockangles"];
+                for (int i = 0; i < rockCoordinates.Count; i++) {
+                    GameObject spawnedRock = Instantiate(rockObject, (coordinate + rockCoordinates[i]), Quaternion.Euler(rockAngles[i]));
+                }
+                List<Vector3> plantCoordinates = (List<Vector3>) islandInformation[coordinate]["plantcoordinates"];
+                List<Vector3> plantAngles = (List<Vector3>) islandInformation[coordinate]["plantangles"]; // These will be the same size
+                for (int i = 0; i < plantCoordinates.Count; i++) {
+                    GameObject spawnedPlant = Instantiate(plantObject, (coordinate + plantCoordinates[i]), Quaternion.Euler(plantAngles[i]));
+                }
+                List<Vector3> chestCoordinates = (List<Vector3>) islandInformation[coordinate]["chestcoordinates"];
+                List<Vector3> chestAngles = (List<Vector3>) islandInformation[coordinate]["chestangles"]; // These will be the same size
+                for (int i = 0; i < chestCoordinates.Count; i++) {
+                    GameObject spawnedChest = Instantiate(chestObject, (coordinate + chestCoordinates[i]), Quaternion.Euler(chestAngles[i]));
+                }
             } else if (activeIslands.Contains(coordinate) && Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z)) > (70 + (float) islandInformation[coordinate]["radius"])) {
                 Debug.Log("NEED TO REMOVE!");
                 activeIslands.Remove(coordinate);

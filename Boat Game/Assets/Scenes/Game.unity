@@ -1243,7 +1243,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6200491160025657898, guid: 3d6ee73ce0cc2f34fb0943aee27b056a, type: 3}
       propertyPath: m_Name
-      value: PalmTree_05 (1)
+      value: Palm Tree
       objectReference: {fileID: 0}
     - target: {fileID: 6200491160025657898, guid: 3d6ee73ce0cc2f34fb0943aee27b056a, type: 3}
       propertyPath: m_IsActive
@@ -1525,6 +1525,11 @@ MonoBehaviour:
   activeIslands: []
   island: {fileID: 5542557019732388581, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
   dock: {fileID: 6594003201089454466, guid: 159b7deb2e40f2b4ca7b658e225813b9, type: 3}
+  palmTree: {fileID: 6162286306399796604, guid: 5b14cbefdefd42149a23358a32bfbf02, type: 3}
+  coconutObject: {fileID: 5429971447643032098, guid: ee23b20800e7d2444999713873e29f39, type: 3}
+  rockObject: {fileID: 3187217721209494907, guid: 5fd80019078b7c94abfed1834996a947, type: 3}
+  plantObject: {fileID: 4577790001144360249, guid: 77aecfe6e4d95b343930e02e5d1134c0, type: 3}
+  chestObject: {fileID: 110828, guid: cae8e749c8d3eb44da3bdd1e6c9f42fd, type: 3}
 --- !u!4 &1868422335
 Transform:
   m_ObjectHideFlags: 0
