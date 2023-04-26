@@ -123,6 +123,58 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &57343773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 57343775}
+  - component: {fileID: 57343774}
+  m_Layer: 0
+  m_Name: IslandManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &57343774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57343773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa1067d4960f3574caff3d2c38687a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeIslands: []
+  island: {fileID: 5542557019732388581, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
+  dock: {fileID: 6594003201089454466, guid: 159b7deb2e40f2b4ca7b658e225813b9, type: 3}
+  palmTree: {fileID: 6162286306399796604, guid: 5b14cbefdefd42149a23358a32bfbf02, type: 3}
+  coconutObject: {fileID: 5429971447643032098, guid: ee23b20800e7d2444999713873e29f39, type: 3}
+  rockObject: {fileID: 3187217721209494907, guid: 5fd80019078b7c94abfed1834996a947, type: 3}
+  plantObject: {fileID: 4577790001144360249, guid: 77aecfe6e4d95b343930e02e5d1134c0, type: 3}
+  chestObject: {fileID: 110828, guid: cae8e749c8d3eb44da3bdd1e6c9f42fd, type: 3}
+--- !u!4 &57343775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57343773}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.395195, y: -0.74076205, z: 40.013035}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &781686419
 GameObject:
   m_ObjectHideFlags: 0
@@ -663,7 +715,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2103528738
 MonoBehaviour:
@@ -688,7 +740,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1991712262701306770, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1991712262701306770, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
       propertyPath: m_LocalPosition.x

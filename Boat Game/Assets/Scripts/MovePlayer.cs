@@ -9,7 +9,6 @@ public class MovePlayer : MonoBehaviour {
     private float turnSpeed = 50f;
     public bool isOnGround = true;
     Vector3 movement;
-    Vector3 centre = new Vector3(250, 0, 250);
 
     // Start is called before the first frame update
     void Start() {
@@ -19,6 +18,7 @@ public class MovePlayer : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
+        Vector3 centre = IslandManager.currentCentre;
         float zVelocity = Input.GetAxis("Vertical") > 0 ? Input.GetAxis("Vertical") : 0; // Get the z velocity 
         movement = new Vector3(0, 0, zVelocity);
         movePlayer(movement);
