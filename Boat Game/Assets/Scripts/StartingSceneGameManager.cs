@@ -47,19 +47,25 @@ public class StartingSceneGameManager : MonoBehaviour {
         Vector3 dockCoordinates = coordinate + (Vector3) IslandManager.islandInformation[coordinate]["dockcoordinates"];
         Vector3 dockScale = (Vector3) IslandManager.islandInformation[coordinate]["dockscale"];
         float dockAngle = (float) IslandManager.islandInformation[coordinate]["dockangle"]*Mathf.PI/180;
-        float dockWidthZ = 11f * dockScale.z;
+        float dockWidthZ = 5f * dockScale.z; // Adjust this?
         // Change needed for x coordinates from dock position !NEED TO FIX THIS!
-        float xChange = (dockCoordinates.x/Mathf.Abs(dockCoordinates.x))*dockWidthZ*Mathf.Cos(dockAngle);
-        float zChange = (dockCoordinates.z/Mathf.Abs(dockCoordinates.z))*dockWidthZ *Mathf.Sin(dockAngle);
-        Debug.Log("HI");
-        Debug.Log(dockAngle);
-        Debug.Log(dockCoordinates);
-        Debug.Log(new Vector3(xChange, 0, zChange));
-        Debug.Log(dockCoordinates + new Vector3(xChange, 0, zChange));
+        // At a scale of 1, the dock length is approx 13 
+        float xAddon = (65/12) * dockScale.x * Mathf.Sin(dockAngle-(Mathf.PI/2));
+        float zAddon = (65/12) * dockScale.x * Mathf.Cos(dockAngle-(Mathf.PI/2));
+        Vector3 addon = new Vector3(xAddon, 0, zAddon);
+        float xChange = dockWidthZ*Mathf.Sin(dockAngle-Mathf.PI);
+        float zChange = dockWidthZ*Mathf.Cos(dockAngle-Mathf.PI);
+        Vector3 change = new Vector3(xChange, 0, zChange);
+        Vector3 newDockCoordinates = addon+dockCoordinates+change;
+        Vector3 finalDockCoordinates = new Vector3(newDockCoordinates.x, 0, newDockCoordinates.z);
         // Need to spawn the boat -> width is ~5.5 when the island is at a z scale of 1
-        //Vector3 difference = 
-        thePlayer = Instantiate(player);
-        thePlayer.transform.position = dockCoordinates + new Vector3(0, 0.5f, 0);
+        float boatAngle = (dockAngle)*180/Mathf.PI;
+        Instantiate(boat, finalDockCoordinates, Quaternion.Euler(0, boatAngle, 0));
+        Vector3 playerCoordinates = dockCoordinates + addon + new Vector3(0, 0.5f, 0);
+        Quaternion playerRotation = Quaternion.Euler(0, (dockAngle+Mathf.PI)*180/Mathf.PI, 0);
+        thePlayer = Instantiate(player, playerCoordinates, playerRotation);
+        IslandManager.startingCoordinates = finalDockCoordinates; // Set the starting coordinate
+        IslandManager.startingAngle = new Vector3(0, boatAngle - 90, 0); // Set the starting angle
     }
 
     // Update is called once per frame

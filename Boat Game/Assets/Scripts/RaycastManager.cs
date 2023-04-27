@@ -17,7 +17,8 @@ public class RaycastManager : MonoBehaviour {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit)) { // using out as hit is for output only 
-                if (Vector3.Distance(hit.transform.position, rb.transform.position) < 4 && hit.transform.name == "Boat") {
+                Debug.Log(hit.transform.tag);
+                if (Vector3.Distance(hit.transform.position, rb.transform.position) < 4 && hit.transform.tag == "Boat") {
                     if (SceneManager.GetActiveScene().name != "Game") {
                         Debug.Log("Loading Game");
                         SceneManager.LoadScene("Game");

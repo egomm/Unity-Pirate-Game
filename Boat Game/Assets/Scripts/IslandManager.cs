@@ -15,6 +15,8 @@ public class IslandManager : MonoBehaviour {
     public GameObject rockObject;
     public GameObject plantObject;
     public GameObject chestObject;
+    public static Vector3 startingCoordinates; // For the boat
+    public static Vector3 startingAngle;
     public static Vector3 currentCentre = new Vector3(0, 0, 0);
 
 

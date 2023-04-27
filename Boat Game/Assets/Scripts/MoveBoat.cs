@@ -19,6 +19,9 @@ public class MoveBoat : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         playerRb = GetComponent<Rigidbody>();
+        Debug.Log("HERE: " + IslandManager.startingCoordinates);
+        playerRb.transform.position = IslandManager.startingCoordinates;
+        playerRb.transform.Rotate(IslandManager.startingAngle);
         playerRb.centerOfMass = centreOfMass.transform.position;
         Invoke("WaveVelocity", 0.5f);
     }
