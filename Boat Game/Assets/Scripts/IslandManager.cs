@@ -9,6 +9,7 @@ public class IslandManager : MonoBehaviour {
     public List<Vector3> activeIslands = new List<Vector3>(); // There shouldn't be any active when scenes change!!!
     public Dictionary<Vector3, List<GameObject>> activeIslandInformation = new Dictionary<Vector3, List<GameObject>>();
     public GameObject island;
+    public GameObject islandBottom;
     public GameObject dock;
     public GameObject palmTree;
     public GameObject coconutObject;
@@ -31,7 +32,7 @@ public class IslandManager : MonoBehaviour {
     }
 
     // Initialise information for the island
-    public bool InitaliseIsland(float angle, float magnitude) {
+    public bool InitaliseIsland(float angle, float magnitude, bool spawnChests) {
         float radius = 10+(10*Random.Range(0.8f, 1f)*magnitude/1000); // Generate an island radius between 10-20 based on randomisation and the magnitude
         float height = Random.Range(radius/5, radius/3); // Generate a random island height betwen 1 and a fifth of the island radius (Between 1 and 4) -> make height between 1/5 and 1/3
         // x coordinate = rcos(angle), z coordinate = rsin(angle)
@@ -225,44 +226,46 @@ public class IslandManager : MonoBehaviour {
             // Chests
             List<Vector3> chestCoordinates = new List<Vector3>();
             List<Vector3> chestAngles = new List<Vector3>();
-            int chestCount = (int) Mathf.Round(Random.Range(radius/10, radius/5));
-            for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, allow chests to overlap plants 
-                float chestAngle = Random.Range(0, 2*Mathf.PI);
-                float chestAngleMangitude = Random.Range(0, (radius/2)); // must be somewhat close to the centre
-                float chestX = chestAngleMangitude*Mathf.Cos(chestAngle);
-                float chestZ = chestAngleMangitude*Mathf.Sin(chestAngle);
-                float chestChange = (Mathf.Pow(chestX, 2) + Mathf.Pow(chestZ, 2))/Mathf.Pow(radius, 2);
-                float chestY = Mathf.Sqrt(1-chestChange)*(height/2) - 0.1f;
-                bool canPlaceChest = true;
-                foreach (var palmTreeCoordinate in palmTreeCoordinates) {
-                    if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 2.5f) {
-                        canPlaceChest = false;
-                        j--; // go back one index
-                        break;
-                    }
-                }
-                if (canPlaceChest) {
-                    foreach (var rockCoordinate in rockCoordinates) {
-                        if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(rockCoordinate.x, rockCoordinate.z)) < 1.5f) {
+            if (spawnChests) {
+                int chestCount = (int)Mathf.Round(Random.Range(radius / 10, radius / 5));
+                for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, allow chests to overlap plants 
+                    float chestAngle = Random.Range(0, 2 * Mathf.PI);
+                    float chestAngleMangitude = Random.Range(0, (radius / 2)); // must be somewhat close to the centre
+                    float chestX = chestAngleMangitude * Mathf.Cos(chestAngle);
+                    float chestZ = chestAngleMangitude * Mathf.Sin(chestAngle);
+                    float chestChange = (Mathf.Pow(chestX, 2) + Mathf.Pow(chestZ, 2)) / Mathf.Pow(radius, 2);
+                    float chestY = Mathf.Sqrt(1 - chestChange) * (height / 2) - 0.1f;
+                    bool canPlaceChest = true;
+                    foreach (var palmTreeCoordinate in palmTreeCoordinates) {
+                        if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 2.5f) {
                             canPlaceChest = false;
                             j--; // go back one index
                             break;
                         }
                     }
                     if (canPlaceChest) {
-                        foreach (var chestCoordinate in chestCoordinates) {
-                            if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(chestCoordinate.x, chestCoordinate.z)) < 1.5f) {
+                        foreach (var rockCoordinate in rockCoordinates) {
+                            if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(rockCoordinate.x, rockCoordinate.z)) < 1.5f) {
                                 canPlaceChest = false;
                                 j--; // go back one index
                                 break;
                             }
                         }
+                        if (canPlaceChest) {
+                            foreach (var chestCoordinate in chestCoordinates) {
+                                if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(chestCoordinate.x, chestCoordinate.z)) < 1.5f) {
+                                    canPlaceChest = false;
+                                    j--; // go back one index
+                                    break;
+                                }
+                            }
+                        }
                     }
-                }
-                if (canPlaceChest) {
-                    float randomChestAngle = Random.Range(0f, 360f);
-                    chestAngles.Add(new Vector3(0, randomChestAngle, 0));
-                    chestCoordinates.Add(new Vector3(chestX, chestY, chestZ));
+                    if (canPlaceChest) {
+                        float randomChestAngle = Random.Range(0f, 360f);
+                        chestAngles.Add(new Vector3(0, randomChestAngle, 0));
+                        chestCoordinates.Add(new Vector3(chestX, chestY, chestZ));
+                    }
                 }
             }
             informationDictionary.Add("radius", radius);
@@ -296,6 +299,9 @@ public class IslandManager : MonoBehaviour {
         float radius = (float) islandInformation[coordinate]["radius"];
         float height = (float) islandInformation[coordinate]["height"];
         spawnedIsland.transform.localScale = new Vector3(2*radius, height, 2*radius);
+        // Spawn the island bottom at the correct position and rotation
+        GameObject spawnedIslandBottom = Instantiate(islandBottom, new Vector3(coordinate.x, -1.5f, coordinate.z), Quaternion.identity);
+        spawnedIslandBottom.transform.localScale = new Vector3(1.98f*radius, 1.5f, 1.98f*radius);
         // Spawn the dock at the correct angle
         GameObject spawnedDock = Instantiate(dock, (coordinate + (Vector3) islandInformation[coordinate]["dockcoordinates"]), Quaternion.Euler(new Vector3(0, (float) islandInformation[coordinate]["dockangle"], 0)));
         componentsList.Add(spawnedDock);

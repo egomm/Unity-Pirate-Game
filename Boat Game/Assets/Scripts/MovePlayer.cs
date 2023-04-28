@@ -27,12 +27,21 @@ public class MovePlayer : MonoBehaviour {
             horizontalInput--;
         }
         transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * horizontalInput);
+        // Count the player so that it is like that they are on ground 
+        //Debug.Log("Wave Height: " + WaveManager.instance.GetWaveHeight(transform.position.z));
+        // Player is underwater
+        float jumpMultiplier = 3f;
+        if (!isOnGround) {
+            isOnGround = transform.position.y < WaveManager.instance.GetWaveHeight(transform.position.z);
+            jumpMultiplier = 0.001f;
+        }
         if (Input.GetKey(KeyCode.Space) && isOnGround) { // If the player is on the ground, allow the player to jump
-            playerRb.AddForce(Vector3.up * 3, ForceMode.VelocityChange);
+            playerRb.AddForce(Vector3.up * jumpMultiplier, ForceMode.VelocityChange);
             isOnGround = false;
         }
         playerAnim.SetBool("moving", Input.GetAxis("Vertical") > 0); // Set animation if player is moving forward
-        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(centre.x, centre.z)) > 25) { // If the player is more than 25 units from the centre
+        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(centre.x, centre.z)) > 25) { // If the player is more than 25 units from the centre 
+            // Need to change this to the radius of the island
             float angle = 0;
             float multiplier = 25;
             if (playerRb.position.x != 0) { // To avoid dividing my 0 

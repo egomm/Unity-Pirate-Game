@@ -10,7 +10,7 @@ public class IslandGameManager : MonoBehaviour {
         for (int i = 0; i < count; i++) {
             float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
             float magnitude = Random.Range(150f, 1000f); // Effectively distance from centre (0, 0)
-            if (!IslandManager.instance.InitaliseIsland(angle, magnitude)) {
+            if (!IslandManager.instance.InitaliseIsland(angle, magnitude, true)) {
                 i--;
             }
         }

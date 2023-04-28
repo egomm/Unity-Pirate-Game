@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1640,6 +1640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeIslands: []
   island: {fileID: 5542557019732388581, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
+  islandBottom: {fileID: 8195328402099908743, guid: 5c72f0d3270d78e4a954930e3a98f8ce, type: 3}
   dock: {fileID: 6594003201089454466, guid: 159b7deb2e40f2b4ca7b658e225813b9, type: 3}
   palmTree: {fileID: 6162286306399796604, guid: 5b14cbefdefd42149a23358a32bfbf02, type: 3}
   coconutObject: {fileID: 5429971447643032098, guid: ee23b20800e7d2444999713873e29f39, type: 3}

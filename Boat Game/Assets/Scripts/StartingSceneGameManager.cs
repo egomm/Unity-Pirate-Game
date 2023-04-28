@@ -7,7 +7,6 @@ public class StartingSceneGameManager : MonoBehaviour {
     public GameObject ocean;
     public GameObject seaFloor;
     public GameObject boat;
-    private GameObject thePlayer;
 
     // Start is called before the first frame update
     void Start() { // WORK ON THIS!
@@ -22,8 +21,7 @@ public class StartingSceneGameManager : MonoBehaviour {
         float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
         float magnitude = Random.Range(150f, 250f); // As this is the centre island, keep it close to the centre
         Debug.Log(IslandManager.instance);
-        Debug.Log(IslandManager.instance.InitaliseIsland(angle, magnitude));
-        IslandManager.instance.InitaliseIsland(angle, magnitude); // keep attempting to initalise island
+        IslandManager.instance.InitaliseIsland(angle, magnitude, false); // keep attempting to initalise island
         Vector3 coordinate = IslandManager.islandCoordinates[0];
         Debug.Log(coordinate.x + ", " + coordinate.y + ", " + coordinate.z);
         IslandManager.instance.CreateIsland(coordinate);
@@ -63,7 +61,7 @@ public class StartingSceneGameManager : MonoBehaviour {
         Instantiate(boat, finalDockCoordinates, Quaternion.Euler(0, boatAngle, 0));
         Vector3 playerCoordinates = dockCoordinates + addon + new Vector3(0, 0.5f, 0);
         Quaternion playerRotation = Quaternion.Euler(0, (dockAngle+Mathf.PI)*180/Mathf.PI, 0);
-        thePlayer = Instantiate(player, playerCoordinates, playerRotation);
+        Instantiate(player, playerCoordinates, playerRotation); // Instatiate the player
         IslandManager.startingCoordinates = finalDockCoordinates; // Set the starting coordinate
         IslandManager.startingAngle = new Vector3(0, boatAngle - 90, 0); // Set the starting angle
     }
