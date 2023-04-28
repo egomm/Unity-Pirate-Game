@@ -33,6 +33,10 @@ public class MoveBoat : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
+        // Set the position & rotation of the player riding the boat to the same as the boat
+        GameObject child = gameObject.transform.Find("Idle Bandit").gameObject;
+        child.transform.position = new Vector3(transform.position.x, transform.position.y+0.4f, transform.position.z);
+        child.transform.rotation = transform.rotation;
         // Get information about the wave
         float waveSpeed = WaveManager.instance.GetSpeed();
         float waveAmplitude = WaveManager.instance.GetAmplitude();

@@ -28,10 +28,10 @@ public class StartingSceneGameManager : MonoBehaviour {
         IslandManager.currentCentre = coordinate;
         // Instantiate the ocean and the sea floor in a radius 
         float radius = (float) IslandManager.islandInformation[coordinate]["radius"];
-        // Spawn prefabs within 3x the radius of the island, and disallow the player out of 2.5x the radius of the island
+        // Spawn prefabs within 4x the radius of the island, and disallow the player out of 1.75x the radius of the island
         // Ocean prefab is 10x10
-        int min = (int) Mathf.Round(radius/10)*-3; 
-        int max = (int) Mathf.Round(radius/10)*3;
+        int min = (int) Mathf.Round(radius/10)*-4; 
+        int max = (int) Mathf.Round(radius/10)*4;
         Debug.Log(min);
         Debug.Log(max);
         for (int x = min; x <= max; x++) {

@@ -301,6 +301,7 @@ public class IslandManager : MonoBehaviour {
         spawnedIsland.transform.localScale = new Vector3(2*radius, height, 2*radius);
         // Spawn the island bottom at the correct position and rotation
         GameObject spawnedIslandBottom = Instantiate(islandBottom, new Vector3(coordinate.x, -1.5f, coordinate.z), Quaternion.identity);
+        componentsList.Add(spawnedIslandBottom);
         spawnedIslandBottom.transform.localScale = new Vector3(1.98f*radius, 1.5f, 1.98f*radius);
         // Spawn the dock at the correct angle
         GameObject spawnedDock = Instantiate(dock, (coordinate + (Vector3) islandInformation[coordinate]["dockcoordinates"]), Quaternion.Euler(new Vector3(0, (float) islandInformation[coordinate]["dockangle"], 0)));
@@ -347,7 +348,7 @@ public class IslandManager : MonoBehaviour {
 
     public void DeleteIsland(Vector3 coordinate, List<GameObject> componentsList) {
         foreach (var component in componentsList) {
-        Destroy(component);
+            Destroy(component);
         }
         activeIslands.Remove(coordinate);
         activeIslandInformation.Remove(coordinate);
