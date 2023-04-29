@@ -1693,59 +1693,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8365590764292887505, guid: cb8023970bbd62147ba1b145685c0a02, type: 3}
   m_PrefabInstance: {fileID: 1826505944}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1868422333
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1868422335}
-  - component: {fileID: 1868422334}
-  m_Layer: 0
-  m_Name: IslandManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1868422334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868422333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa1067d4960f3574caff3d2c38687a2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activeIslands: []
-  island: {fileID: 5542557019732388581, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
-  islandBottom: {fileID: 8195328402099908743, guid: 5c72f0d3270d78e4a954930e3a98f8ce, type: 3}
-  dock: {fileID: 6594003201089454466, guid: 159b7deb2e40f2b4ca7b658e225813b9, type: 3}
-  palmTree: {fileID: 6162286306399796604, guid: 5b14cbefdefd42149a23358a32bfbf02, type: 3}
-  coconutObject: {fileID: 5429971447643032098, guid: ee23b20800e7d2444999713873e29f39, type: 3}
-  rockObject: {fileID: 3187217721209494907, guid: 5fd80019078b7c94abfed1834996a947, type: 3}
-  plantObject: {fileID: 4577790001144360249, guid: 77aecfe6e4d95b343930e02e5d1134c0, type: 3}
-  chestObject: {fileID: 110828, guid: cae8e749c8d3eb44da3bdd1e6c9f42fd, type: 3}
---- !u!4 &1868422335
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868422333}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.395195, y: -0.74076205, z: 40.013035}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2029212891
 GameObject:
   m_ObjectHideFlags: 0
@@ -1840,6 +1787,63 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 45.000004, y: -115, z: 0}
+--- !u!1 &2034632682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2034632684}
+  - component: {fileID: 2034632683}
+  m_Layer: 0
+  m_Name: IslandManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2034632683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034632682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa1067d4960f3574caff3d2c38687a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeIslands: []
+  island: {fileID: 5542557019732388581, guid: 5e8ddb45ea954bd44a8430b02e67c266, type: 3}
+  islandBottom: {fileID: 8195328402099908743, guid: 5c72f0d3270d78e4a954930e3a98f8ce, type: 3}
+  dock: {fileID: 6594003201089454466, guid: 159b7deb2e40f2b4ca7b658e225813b9, type: 3}
+  palmTree: {fileID: 6162286306399796604, guid: 5b14cbefdefd42149a23358a32bfbf02, type: 3}
+  coconutObject: {fileID: 5429971447643032098, guid: ee23b20800e7d2444999713873e29f39, type: 3}
+  rockObject: {fileID: 3187217721209494907, guid: 5fd80019078b7c94abfed1834996a947, type: 3}
+  plantObject: {fileID: 4577790001144360249, guid: 77aecfe6e4d95b343930e02e5d1134c0, type: 3}
+  chestObject: {fileID: 110828, guid: cae8e749c8d3eb44da3bdd1e6c9f42fd, type: 3}
+  player: {fileID: 6636194918444816317, guid: 93f2b96b0f196984bb086755ea8b9624, type: 3}
+  ocean: {fileID: 1253786579061247143, guid: e835b36f4d2413c4fba57f7910fecca3, type: 3}
+  seaFloor: {fileID: 5169790274538693797, guid: 67ba7fef99a72004391e506969c33050, type: 3}
+  boat: {fileID: 5151524194615792976, guid: 441471feec19b984f96c5661edd0c16f, type: 3}
+--- !u!4 &2034632684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034632682}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2060407329
 PrefabInstance:
   m_ObjectHideFlags: 0

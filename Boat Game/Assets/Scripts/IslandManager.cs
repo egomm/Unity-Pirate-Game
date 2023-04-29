@@ -8,6 +8,7 @@ public class IslandManager : MonoBehaviour {
     public static Dictionary<Vector3, Dictionary<string, object>> islandInformation = new Dictionary<Vector3, Dictionary<string, object>>();
     public List<Vector3> activeIslands = new List<Vector3>(); // There shouldn't be any active when scenes change!!!
     public Dictionary<Vector3, List<GameObject>> activeIslandInformation = new Dictionary<Vector3, List<GameObject>>();
+    // Information for regular island
     public GameObject island;
     public GameObject islandBottom;
     public GameObject dock;
@@ -16,7 +17,13 @@ public class IslandManager : MonoBehaviour {
     public GameObject rockObject;
     public GameObject plantObject;
     public GameObject chestObject;
-    public static Vector3 startingCoordinates; // For the boat
+    // Information for regular island with oceam
+    public GameObject player;
+    public GameObject ocean;
+    public GameObject seaFloor;
+    public GameObject boat;
+    // Information for the boat/island
+    public static Vector3 startingCoordinates; 
     public static Vector3 startingAngle;
     public static Vector3 currentCentre = new Vector3(0, 0, 0);
 
@@ -344,6 +351,45 @@ public class IslandManager : MonoBehaviour {
         }
         activeIslandInformation.Add(coordinate, componentsList);
         Debug.Log("DONE?");
+    }
+
+    public void CreateIslandAndOcean(Vector3 coordinate) {
+        CreateIsland(coordinate);
+        // Instantiate the ocean and the sea floor in a radius 
+        float radius = (float) islandInformation[coordinate]["radius"];
+        // Spawn prefabs within 4x the radius of the island, and disallow the player out of 1.75x the radius of the island
+        // Ocean prefab is 10x10
+        int min = (int) Mathf.Round(radius / 10) * -4;
+        int max = (int) Mathf.Round(radius / 10) * 4;
+        for (int x = min; x <= max; x++) {
+            for (int z = min; z <= max; z++) {
+                Instantiate(ocean, new Vector3(10 * x, 0, 10 * z) + coordinate, Quaternion.identity);
+                Instantiate(seaFloor, new Vector3(10 * x, -3, 10 * z) + coordinate, Quaternion.identity);
+                Debug.Log(new Vector3(10 * x, 0, 10 * z) + coordinate);
+            }
+        }
+        //Instantiate(island, new Vector3(250, 0, 250), Quaternion.identity);
+        Vector3 dockCoordinates = coordinate + (Vector3) islandInformation[coordinate]["dockcoordinates"];
+        Vector3 dockScale = (Vector3) islandInformation[coordinate]["dockscale"];
+        float dockAngle = (float) islandInformation[coordinate]["dockangle"] * Mathf.PI / 180;
+        float dockWidthZ = 5f * dockScale.z; // Adjust this?
+        // At a scale of 1, the dock length is approx 13 
+        float xAddon = (65 / 12) * dockScale.x * Mathf.Sin(dockAngle - (Mathf.PI / 2));
+        float zAddon = (65 / 12) * dockScale.x * Mathf.Cos(dockAngle - (Mathf.PI / 2));
+        Vector3 addon = new Vector3(xAddon, 0, zAddon);
+        float xChange = dockWidthZ * Mathf.Sin(dockAngle - Mathf.PI);
+        float zChange = dockWidthZ * Mathf.Cos(dockAngle - Mathf.PI);
+        Vector3 change = new Vector3(xChange, 0, zChange);
+        Vector3 newDockCoordinates = addon + dockCoordinates + change;
+        Vector3 finalDockCoordinates = new Vector3(newDockCoordinates.x, 0, newDockCoordinates.z);
+        // Need to spawn the boat -> width is ~5.5 when the island is at a z scale of 1
+        float boatAngle = (dockAngle) * 180 / Mathf.PI;
+        Instantiate(boat, finalDockCoordinates, Quaternion.Euler(0, boatAngle, 0));
+        Vector3 playerCoordinates = dockCoordinates + addon + new Vector3(0, 0.5f, 0);
+        Quaternion playerRotation = Quaternion.Euler(0, (dockAngle + 0.5f * Mathf.PI) * 180 / Mathf.PI, 0);
+        Instantiate(player, playerCoordinates, playerRotation); // Instatiate the player
+        startingCoordinates = finalDockCoordinates; // Set the starting coordinate
+        startingAngle = new Vector3(0, boatAngle - 90, 0); // Set the starting angle
     }
 
     public void DeleteIsland(Vector3 coordinate, List<GameObject> componentsList) {
