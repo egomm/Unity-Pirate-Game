@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class MovePlayer : MonoBehaviour {
     private Rigidbody playerRb;
@@ -65,31 +64,6 @@ public class MovePlayer : MonoBehaviour {
             float newPlayerX = multiplier*Mathf.Cos(angle);
             float newPlayerZ = multiplier*Mathf.Sin(angle);
             playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);
-        }
-        if (SceneManager.GetActiveScene().name == "Island Scene") {
-            foreach (var pirate in GameObject.FindGameObjectsWithTag("Pirate")) {
-                Debug.Log(Vector3.Distance(pirate.transform.position, transform.position));
-                //Debug.Log(Vector3.Distance(pirate.transform.position, transform.position));
-                if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
-                    pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
-                    if (Vector3.Distance(pirate.transform.position, transform.position) < 4f) {
-                        // Can attack the player if the player is visible 
-                    }
-                }
-                // Check if the pirate is out of the island radius 
-                multiplier = 0.95f*radius;
-                if (Vector2.Distance(new Vector2(pirate.transform.position.x, pirate.transform.position.z), centreTwoDimensional) > multiplier) {
-                    float angle = 0;
-                    if (pirate.transform.position.x != 0) { // To avoid dividing my 0 
-                        angle = Mathf.Atan((pirate.transform.position.z-centre.z)/(pirate.transform.position.x-centre.x));
-                        multiplier *= (pirate.transform.position.x-centre.x)/Mathf.Abs(pirate.transform.position.x-centre.x);
-                    }
-                    // Get the new player positions based on trig
-                    float newPirateX = multiplier*Mathf.Cos(angle);
-                    float newPirateZ = multiplier*Mathf.Sin(angle);
-                    pirate.transform.position = new Vector3(newPirateX + centre.x, pirate.transform.position.y, newPirateZ + centre.z);
-                } 
-            }
         }
     }
 
