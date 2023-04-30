@@ -531,6 +531,12 @@ MonoBehaviour:
   rockObject: {fileID: 3187217721209494907, guid: 5fd80019078b7c94abfed1834996a947, type: 3}
   plantObject: {fileID: 4577790001144360249, guid: 77aecfe6e4d95b343930e02e5d1134c0, type: 3}
   chestObject: {fileID: 110828, guid: cae8e749c8d3eb44da3bdd1e6c9f42fd, type: 3}
+  pirates:
+  - {fileID: 1699793559482477837, guid: ffe3ad23be052d84c83952a08a0f52c7, type: 3}
+  - {fileID: 2088119025073896427, guid: acd8c4148cf99584195b07aeb0585f26, type: 3}
+  - {fileID: 3749374715606865212, guid: c48ccd4514b92c8458f9a430ebfa94d5, type: 3}
+  - {fileID: 6958116879433367407, guid: a96f442e4c9dde2419e2d5d3429bdb1b, type: 3}
+  pirateCaptain: {fileID: 8253177694292263104, guid: 54d96ebabc3051b478368267348bcec4, type: 3}
   player: {fileID: 6636194918444816317, guid: 93f2b96b0f196984bb086755ea8b9624, type: 3}
   ocean: {fileID: 1253786579061247143, guid: e835b36f4d2413c4fba57f7910fecca3, type: 3}
   seaFloor: {fileID: 5169790274538693797, guid: 67ba7fef99a72004391e506969c33050, type: 3}

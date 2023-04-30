@@ -9,7 +9,13 @@ public class MovePlayer : MonoBehaviour {
     private float turnSpeed = 50f;
     public bool isOnGround = true;
     private float lastSwimTime = 0;
+    public static MovePlayer instance;
+    public static GameObject player;
     Vector3 movement;
+
+    void Awake() {
+        player = gameObject;
+    }
 
     // Start is called before the first frame update
     void Start() {

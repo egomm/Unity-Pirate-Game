@@ -20,7 +20,7 @@ public class StartingSceneGameManager : MonoBehaviour {
         float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
         float magnitude = Random.Range(150f, 250f); // As this is the centre island, keep it close to the centre
         Debug.Log(IslandManager.instance);
-        IslandManager.instance.InitaliseIsland(angle, magnitude, false); // keep attempting to initalise island
+        IslandManager.instance.InitaliseIsland(angle, magnitude, false, false); // keep attempting to initalise island
         Vector3 coordinate = IslandManager.islandCoordinates[0];
         IslandManager.currentCentre = coordinate;
         if (IslandManager.islandInformation.ContainsKey(coordinate)) {

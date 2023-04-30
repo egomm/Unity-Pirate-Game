@@ -17,6 +17,9 @@ public class IslandManager : MonoBehaviour {
     public GameObject rockObject;
     public GameObject plantObject;
     public GameObject chestObject;
+    // Pirates
+    public GameObject[] pirates = new GameObject[4];
+    public GameObject pirateCaptain;
     // Information for regular island with oceam
     public GameObject player;
     public GameObject ocean;
@@ -39,7 +42,7 @@ public class IslandManager : MonoBehaviour {
     }
 
     // Initialise information for the island
-    public bool InitaliseIsland(float angle, float magnitude, bool spawnChests) {
+    public bool InitaliseIsland(float angle, float magnitude, bool spawnChests, bool spawnPirate) {
         float radius = 10+(10*Random.Range(0.8f, 1f)*magnitude/1000); // Generate an island radius between 10-20 based on randomisation and the magnitude
         float height = Random.Range(radius/5, radius/3); // Generate a random island height betwen 1 and a fifth of the island radius (Between 1 and 4) -> make height between 1/5 and 1/3
         // x coordinate = rcos(angle), z coordinate = rsin(angle)
@@ -234,7 +237,7 @@ public class IslandManager : MonoBehaviour {
             List<Vector3> chestCoordinates = new List<Vector3>();
             List<Vector3> chestAngles = new List<Vector3>();
             if (spawnChests) {
-                int chestCount = (int)Mathf.Round(Random.Range(radius / 10, radius / 5));
+                int chestCount = (int) Mathf.Round(Random.Range(radius / 10, radius / 5));
                 for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, allow chests to overlap plants 
                     float chestAngle = Random.Range(0, 2 * Mathf.PI);
                     float chestAngleMangitude = Random.Range(0, (radius / 2)); // must be somewhat close to the centre
@@ -243,6 +246,7 @@ public class IslandManager : MonoBehaviour {
                     float chestChange = (Mathf.Pow(chestX, 2) + Mathf.Pow(chestZ, 2)) / Mathf.Pow(radius, 2);
                     float chestY = Mathf.Sqrt(1 - chestChange) * (height / 2) - 0.1f;
                     bool canPlaceChest = true;
+                    // Iterate over all of the objects which the chests could potentially collide with
                     foreach (var palmTreeCoordinate in palmTreeCoordinates) {
                         if (Vector2.Distance(new Vector2(chestX, chestZ), new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 2.5f) {
                             canPlaceChest = false;
@@ -275,6 +279,67 @@ public class IslandManager : MonoBehaviour {
                     }
                 }
             }
+            List<Vector3> pirateCoordinates = new List<Vector3>();
+            List<Vector3> pirateAngles = new List<Vector3>();
+            List<GameObject> piratesToSpawn = new List<GameObject>();
+            if (spawnPirate) {
+                if (spawnChests) { // Spawn the pirates near to the chests (within a third of the island radius)
+                    // Spawn between 0 and 2 pirates per chest
+                    foreach (var chestCoordinate in chestCoordinates) { // Iterate over the chest coordinates
+                        int pirateCount = Random.Range(1, 3); // Using Random.Range() with integers is exclusive of the upper bound (spawn 1 or 2 pirates)
+                        for (int j = 0; j < pirateCount; j++) {
+                            float pirateSpawnRadius = Random.Range(1f, radius / 3); // Spawn the pirate within 1 unit (prevents pirate being spawned in chest) and 1/3 island radii of the chest
+                            float randomAngle = Random.Range(0, 2 * Mathf.PI); // Determine the angle from the chest at which to spawn the pirate
+                            float addPirateSpawnX = pirateSpawnRadius * Mathf.Cos(randomAngle);
+                            float addPirateSpawnZ = pirateSpawnRadius * Mathf.Sin(randomAngle);
+                            Vector3 addPirateSpawn = new Vector3(addPirateSpawnX, 0.75f, addPirateSpawnZ); // Add on 0.75 units upwards to account for gradient etc (customise this later?)
+                            Vector3 pirateSpawnCoordinate = chestCoordinate + addPirateSpawn;
+                            Vector2 twoDimensionalPirateSpawnCoordinate = new Vector2(pirateSpawnCoordinate.x, pirateSpawnCoordinate.z);
+                            bool canSpawnPirate = true;
+                            foreach (var palmTreeCoordinate in palmTreeCoordinates) {
+                                if (Vector2.Distance(twoDimensionalPirateSpawnCoordinate, new Vector2(palmTreeCoordinate.x, palmTreeCoordinate.z)) < 2.5f) {
+                                    canSpawnPirate = false;
+                                    j--;
+                                    break;
+                                }
+                            }
+                            if (canSpawnPirate) {
+                                foreach (var rockCoordinate in rockCoordinates) {
+                                    if (Vector2.Distance(twoDimensionalPirateSpawnCoordinate, new Vector2(rockCoordinate.x, rockCoordinate.z)) < 1.5f) {
+                                        canSpawnPirate = false;
+                                        j--;
+                                        break;
+                                    }
+                                }
+                                if (canSpawnPirate) {
+                                    foreach (var pirateCoordinate in pirateCoordinates) {
+                                        if (Vector2.Distance(twoDimensionalPirateSpawnCoordinate, new Vector2(pirateCoordinate.x, pirateCoordinate.z)) < 1.5f) {
+                                            canSpawnPirate = false;
+                                            j--;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (canSpawnPirate) { // Passed all test cases
+                                float randomPirateAngle = Random.Range(0f, 360f);
+                                GameObject pirateToSpawn;
+                                if (Random.Range(0, 100) >= 96) {
+                                    pirateToSpawn = pirateCaptain;
+                                } else {
+                                    int pirateSpawnIndex = Random.Range(0, 4); // Pick an index from [0, 1, 2, 3]
+                                    pirateToSpawn = pirates[pirateSpawnIndex];
+                                }
+                                pirateAngles.Add(new Vector3(0, randomPirateAngle, 0));
+                                pirateCoordinates.Add(pirateSpawnCoordinate);
+                                piratesToSpawn.Add(pirateToSpawn);
+                            }
+                        }
+                    }
+                } else { // Spawn the pirates wherever possible
+                    int pirateCount = (int) Mathf.Round(Random.Range(radius / 10, radius / 5)); // Same spawn rate as what chests would have been
+                }
+            }
             informationDictionary.Add("radius", radius);
             informationDictionary.Add("height", height);
             informationDictionary.Add("dockangle", dockAngle);
@@ -290,6 +355,9 @@ public class IslandManager : MonoBehaviour {
             informationDictionary.Add("plantangles", plantAngles);
             informationDictionary.Add("chestcoordinates", chestCoordinates);
             informationDictionary.Add("chestangles", chestAngles);
+            informationDictionary.Add("piratecoordinates", pirateCoordinates);
+            informationDictionary.Add("pirateangles", pirateAngles);
+            informationDictionary.Add("piratestospawn", piratesToSpawn);
             islandInformation.Add(islandCoordinate, informationDictionary);
             return true;
         } // Go back by an index if the island is in range of another island
@@ -348,6 +416,14 @@ public class IslandManager : MonoBehaviour {
         for (int i = 0; i < chestCoordinates.Count; i++) {
             GameObject spawnedChest = Instantiate(chestObject, (coordinate + chestCoordinates[i]), Quaternion.Euler(chestAngles[i]));
             componentsList.Add(spawnedChest);
+        }
+        List<Vector3> pirateCoordinates = (List<Vector3>) islandInformation[coordinate]["piratecoordinates"];
+        List<Vector3> pirateAngles = (List<Vector3>) islandInformation[coordinate]["pirateangles"]; // These will be the same size
+        List<GameObject> piratesToSpawn = (List<GameObject>) islandInformation[coordinate]["piratestospawn"];
+        for (int i = 0; i < pirateCoordinates.Count; i++) {
+            // Animation causes lag on load
+            GameObject spawnedPirate = Instantiate(piratesToSpawn[i], coordinate + pirateCoordinates[i], Quaternion.Euler(pirateAngles[i]));
+            componentsList.Add(spawnedPirate);
         }
         activeIslandInformation.Add(coordinate, componentsList);
         Debug.Log("DONE?");
