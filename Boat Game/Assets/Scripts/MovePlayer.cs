@@ -52,9 +52,10 @@ public class MovePlayer : MonoBehaviour {
             }
         }
         playerAnim.SetBool("moving", Input.GetAxis("Vertical") > 0); // Set animation if player is moving forward
-        float multiplier = 2f * (float) IslandManager.islandInformation[centre]["radius"];
-        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(centre.x, centre.z)) > multiplier) { // If the player is more than 25 units from the centre 
-            // Need to change this to the radius of the island
+        float radius = (float) IslandManager.islandInformation[centre]["radius"];
+        float multiplier = 2f * radius;
+        Vector2 centreTwoDimensional = new Vector2(centre.x, centre.z);
+        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), centreTwoDimensional) > multiplier) { // If the player is more than 2x the radius from the centre 
             float angle = 0;
             if (playerRb.position.x != 0) { // To avoid dividing my 0 
                 angle = Mathf.Atan((playerRb.position.z-centre.z)/(playerRb.position.x-centre.x));
@@ -70,8 +71,24 @@ public class MovePlayer : MonoBehaviour {
                 Debug.Log(Vector3.Distance(pirate.transform.position, transform.position));
                 //Debug.Log(Vector3.Distance(pirate.transform.position, transform.position));
                 if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
-                    pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, Time.deltaTime);
+                    pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
+                    if (Vector3.Distance(pirate.transform.position, transform.position) < 4f) {
+                        // Can attack the player if the player is visible 
+                    }
                 }
+                // Check if the pirate is out of the island radius 
+                multiplier = 0.95f*radius;
+                if (Vector2.Distance(new Vector2(pirate.transform.position.x, pirate.transform.position.z), centreTwoDimensional) > multiplier) {
+                    float angle = 0;
+                    if (pirate.transform.position.x != 0) { // To avoid dividing my 0 
+                        angle = Mathf.Atan((pirate.transform.position.z-centre.z)/(pirate.transform.position.x-centre.x));
+                        multiplier *= (pirate.transform.position.x-centre.x)/Mathf.Abs(pirate.transform.position.x-centre.x);
+                    }
+                    // Get the new player positions based on trig
+                    float newPirateX = multiplier*Mathf.Cos(angle);
+                    float newPirateZ = multiplier*Mathf.Sin(angle);
+                    pirate.transform.position = new Vector3(newPirateX + centre.x, pirate.transform.position.y, newPirateZ + centre.z);
+                } 
             }
         }
     }
