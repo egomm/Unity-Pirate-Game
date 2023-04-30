@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class IslandManager : MonoBehaviour {
     public static IslandManager instance;
@@ -30,6 +31,9 @@ public class IslandManager : MonoBehaviour {
     public static Vector3 startingAngle;
     public static Vector3 currentCentre = new Vector3(0, 0, 0);
 
+    public Vector3 currentCoordinate;
+    public int pirateIndex;
+
 
     private void Awake() { // Called before start 
         instance = this;
@@ -37,8 +41,11 @@ public class IslandManager : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        activeIslands.Clear();
-        activeIslandInformation.Clear();
+        if (SceneManager.GetActiveScene().name != "Island Scene") {
+            activeIslands.Clear();
+            activeIslandInformation.Clear();
+            Debug.Log("CLEAR");
+        }
     }
 
     // Initialise information for the island
@@ -365,6 +372,7 @@ public class IslandManager : MonoBehaviour {
     }
 
     public void CreateIsland(Vector3 coordinate) {
+        currentCoordinate = coordinate;
         Debug.Log("NEARBY ISLAND: " + coordinate.x + ", " + coordinate.y + ", " + coordinate.z);
         activeIslands.Add(coordinate);
         List<GameObject> componentsList = new List<GameObject>();
@@ -417,16 +425,32 @@ public class IslandManager : MonoBehaviour {
             GameObject spawnedChest = Instantiate(chestObject, (coordinate + chestCoordinates[i]), Quaternion.Euler(chestAngles[i]));
             componentsList.Add(spawnedChest);
         }
-        List<Vector3> pirateCoordinates = (List<Vector3>) islandInformation[coordinate]["piratecoordinates"];
-        List<Vector3> pirateAngles = (List<Vector3>) islandInformation[coordinate]["pirateangles"]; // These will be the same size
-        List<GameObject> piratesToSpawn = (List<GameObject>) islandInformation[coordinate]["piratestospawn"];
-        for (int i = 0; i < pirateCoordinates.Count; i++) {
-            // Animation causes lag on load
-            GameObject spawnedPirate = Instantiate(piratesToSpawn[i], coordinate + pirateCoordinates[i], Quaternion.Euler(pirateAngles[i]));
-            componentsList.Add(spawnedPirate);
-        }
+        List<Vector3> pirateCoordinates = (List<Vector3>) islandInformation[currentCoordinate]["piratecoordinates"];
+        pirateIndex = 0;
+        Debug.Log("HELLO");
         activeIslandInformation.Add(coordinate, componentsList);
+        if (pirateCoordinates.Count > 0) {
+            Invoke("SpawnPirates", 0.25f);
+        }
         Debug.Log("DONE?");
+    }
+
+    public void SpawnPirates() {
+        if (activeIslandInformation.ContainsKey(currentCoordinate)) { // Island has gone if this is false
+            List<Vector3> pirateCoordinates = (List<Vector3>)islandInformation[currentCoordinate]["piratecoordinates"];
+            List<Vector3> pirateAngles = (List<Vector3>)islandInformation[currentCoordinate]["pirateangles"]; // These will be the same size
+            List<GameObject> piratesToSpawn = (List<GameObject>)islandInformation[currentCoordinate]["piratestospawn"];
+            GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex]));
+            List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
+            componentsList.Add(spawnedPirate);
+            activeIslandInformation[currentCoordinate] = componentsList;
+            if (pirateIndex < pirateCoordinates.Count - 1) {
+                pirateIndex++;
+                Invoke("SpawnPirates", 0.1f);
+            }
+        } else {
+            Debug.Log("WHY?");
+        }
     }
 
     public void CreateIslandAndOcean(Vector3 coordinate) {
@@ -441,7 +465,7 @@ public class IslandManager : MonoBehaviour {
             for (int z = min; z <= max; z++) {
                 Instantiate(ocean, new Vector3(10 * x, 0, 10 * z) + coordinate, Quaternion.identity);
                 Instantiate(seaFloor, new Vector3(10 * x, -3, 10 * z) + coordinate, Quaternion.identity);
-                Debug.Log(new Vector3(10 * x, 0, 10 * z) + coordinate);
+                //Debug.Log(new Vector3(10 * x, 0, 10 * z) + coordinate);
             }
         }
         //Instantiate(island, new Vector3(250, 0, 250), Quaternion.identity);

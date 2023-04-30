@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MovePlayer : MonoBehaviour {
     private Rigidbody playerRb;
@@ -63,6 +64,15 @@ public class MovePlayer : MonoBehaviour {
             float newPlayerX = multiplier*Mathf.Cos(angle);
             float newPlayerZ = multiplier*Mathf.Sin(angle);
             playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);
+        }
+        if (SceneManager.GetActiveScene().name == "Island Scene") {
+            foreach (var pirate in GameObject.FindGameObjectsWithTag("Pirate")) {
+                Debug.Log(Vector3.Distance(pirate.transform.position, transform.position));
+                //Debug.Log(Vector3.Distance(pirate.transform.position, transform.position));
+                if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
+                    pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, Time.deltaTime);
+                }
+            }
         }
     }
 
