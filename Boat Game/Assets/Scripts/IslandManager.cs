@@ -440,13 +440,15 @@ public class IslandManager : MonoBehaviour {
             List<Vector3> pirateCoordinates = (List<Vector3>)islandInformation[currentCoordinate]["piratecoordinates"];
             List<Vector3> pirateAngles = (List<Vector3>)islandInformation[currentCoordinate]["pirateangles"]; // These will be the same size
             List<GameObject> piratesToSpawn = (List<GameObject>)islandInformation[currentCoordinate]["piratestospawn"];
-            GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex]));
-            List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
-            componentsList.Add(spawnedPirate);
-            activeIslandInformation[currentCoordinate] = componentsList;
-            if (pirateIndex < pirateCoordinates.Count - 1) {
-                pirateIndex++;
-                Invoke("SpawnPirates", 0.1f);
+            if (pirateIndex < pirateCoordinates.Count) { // Resolves out of bounds issues
+                GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex])); // Add more tests for this?
+                List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
+                componentsList.Add(spawnedPirate);
+                activeIslandInformation[currentCoordinate] = componentsList;
+                if (pirateIndex < pirateCoordinates.Count - 1) {
+                    pirateIndex++;
+                    Invoke("SpawnPirates", 0.1f);
+                }
             }
         } else {
             Debug.Log("WHY?");
