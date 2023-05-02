@@ -2,13 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour {
     private List<float> lastAttackTimes = new List<float>();
     private List<int> pirateTypes = new List<int>();
+    public static double playerHealth = 100;
     // Start is called before the first frame update
+    public Text my_text;
     void Start() {
-
+        Debug.Log("hi");
+        Debug.Log(GameObject.FindGameObjectsWithTag("Health").Length);
+        GameObject healthText = GameObject.FindWithTag("Health");
+        Debug.Log(healthText);
+        my_text = healthText.GetComponent<Text>();
+        my_text.text = "hi";
     }
 
     // Update is called once per frame
@@ -55,6 +63,9 @@ public class PlayerManager : MonoBehaviour {
                             // Attack the player 
                             Debug.Log("ATTACK");
                             Debug.Log("TYPE: " + pirateTypes[i]);
+                            float pirateDamage = 0.25f + (0.05f * pirateTypes[i]); // between 0.25 and 0.5 for the damage
+                            playerHealth -= pirateDamage;
+                            Debug.Log("HEALTH: " + playerHealth);
                         }
                     }
                 }
@@ -69,6 +80,9 @@ public class PlayerManager : MonoBehaviour {
                     float newPirateX = multiplier * Mathf.Cos(angle);
                     float newPirateZ = multiplier * Mathf.Sin(angle);
                     pirate.transform.position = new Vector3(newPirateX + centre.x, pirate.transform.position.y, newPirateZ + centre.z);
+                }
+                if (playerHealth <= 0) { // If the player health is less than 0, player is dead
+                    Debug.Log("PLAYER DEAD");
                 }
             }
         }

@@ -7,6 +7,8 @@ TagManager:
   - Island
   - Boat
   - Dock
+  - Pirate
+  - 'Health '
   layers:
   - Default
   - TransparentFX
