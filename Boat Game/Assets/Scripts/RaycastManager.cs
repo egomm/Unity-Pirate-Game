@@ -6,16 +6,46 @@ using UnityEngine.SceneManagement;
 public class RaycastManager : MonoBehaviour {
 
     private Rigidbody rb;
+    private float lastAttackTime = 0;
     // Start is called before the first frame update
     void Start() {
+        lastAttackTime = Time.time;
         rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update() {
+        Vector3 islandCoordinates = IslandManager.currentCentre;
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Creates a ray from the from the camera through a screen point (in this case the mouse position)
+        if (Input.GetMouseButtonDown(0)) { // If left click is pressed
+            if (Physics.Raycast(ray, out hit)) {
+                Debug.Log(hit.transform.tag);
+                if (hit.transform.tag == "Pirate") { // add distance checks
+                    Debug.Log("Clicked pirate");
+                    if (Vector3.Distance(hit.transform.position, transform.position) < 2.5f) { // Player is within two and a half units of the pirate
+                        if ((Time.time - lastAttackTime) >= 0.5f) { // can only attack once every 500ms
+                            lastAttackTime = Time.time;
+                            List<GameObject> pirates = IslandManager.activePirates;
+                            List<float> piratesHealth = (List<float>) IslandManager.islandInformation[islandCoordinates]["pirateshealth"];
+                            for (int i = 0; i < pirates.Count; i++) { 
+                                if (pirates[i] == hit.transform.gameObject) {
+                                    // Attack the pirate
+                                    Debug.Log("Initial list: " + piratesHealth);
+                                    Debug.Log("Initial Health: " + piratesHealth[i]);
+                                    piratesHealth[i]--;
+                                    Debug.Log("New Health: " + piratesHealth[i]);
+                                    Debug.Log("Final list: " + piratesHealth);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if (Input.GetMouseButtonDown(1)) { // If right click is pressed
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Creates a ray from the from the camera through a screen point (in this case the mouse position)
             if (Physics.Raycast(ray, out hit)) { // using out because hit is for output only 
                 Vector2 normalisedPlayerPos = new Vector2(rb.transform.position.x, rb.transform.position.z);
                 Vector2 normalisedHitPos = new Vector2(hit.transform.position.x, hit.transform.position.z);

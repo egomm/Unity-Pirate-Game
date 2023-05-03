@@ -30,6 +30,8 @@ public class IslandManager : MonoBehaviour {
     public static Vector3 startingCoordinates; 
     public static Vector3 startingAngle;
     public static Vector3 currentCentre = new Vector3(0, 0, 0);
+    // Pirate information
+    public static List<GameObject> activePirates = new List<GameObject>();
 
     public Vector3 currentCoordinate;
     public int pirateIndex;
@@ -289,6 +291,7 @@ public class IslandManager : MonoBehaviour {
             List<Vector3> pirateCoordinates = new List<Vector3>();
             List<Vector3> pirateAngles = new List<Vector3>();
             List<GameObject> piratesToSpawn = new List<GameObject>();
+            List<float> piratesHealth = new List<float>();
             if (spawnPirate) {
                 if (spawnChests) { // Spawn the pirates near to the chests (within a third of the island radius)
                     // Spawn between 0 and 2 pirates per chest
@@ -331,12 +334,17 @@ public class IslandManager : MonoBehaviour {
                             if (canSpawnPirate) { // Passed all test cases
                                 float randomPirateAngle = Random.Range(0f, 360f);
                                 GameObject pirateToSpawn;
+                                float pirateHealth = 50;
                                 if (Random.Range(0, 100) >= 96) {
                                     pirateToSpawn = pirateCaptain;
+                                    pirateHealth = 100;
                                 } else {
                                     int pirateSpawnIndex = Random.Range(0, 4); // Pick an index from [0, 1, 2, 3]
+                                    pirateHealth = 50 + (pirateSpawnIndex + 1) * 10;
                                     pirateToSpawn = pirates[pirateSpawnIndex];
                                 }
+                                // Add the health of the players
+                                piratesHealth.Add(pirateHealth);
                                 pirateAngles.Add(new Vector3(0, randomPirateAngle, 0));
                                 pirateCoordinates.Add(pirateSpawnCoordinate);
                                 piratesToSpawn.Add(pirateToSpawn);
@@ -365,6 +373,7 @@ public class IslandManager : MonoBehaviour {
             informationDictionary.Add("piratecoordinates", pirateCoordinates);
             informationDictionary.Add("pirateangles", pirateAngles);
             informationDictionary.Add("piratestospawn", piratesToSpawn);
+            informationDictionary.Add("pirateshealth", piratesHealth);
             islandInformation.Add(islandCoordinate, informationDictionary);
             return true;
         } // Go back by an index if the island is in range of another island
@@ -430,6 +439,7 @@ public class IslandManager : MonoBehaviour {
         Debug.Log("HELLO");
         activeIslandInformation.Add(coordinate, componentsList);
         if (pirateCoordinates.Count > 0) {
+            activePirates.Clear();
             Invoke("SpawnPirates", 0.25f);
         }
         Debug.Log("DONE?");
@@ -442,6 +452,7 @@ public class IslandManager : MonoBehaviour {
             List<GameObject> piratesToSpawn = (List<GameObject>)islandInformation[currentCoordinate]["piratestospawn"];
             if (pirateIndex < pirateCoordinates.Count) { // Resolves out of bounds issues
                 GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex])); // Add more tests for this?
+                activePirates.Add(spawnedPirate);
                 List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
                 componentsList.Add(spawnedPirate);
                 activeIslandInformation[currentCoordinate] = componentsList;

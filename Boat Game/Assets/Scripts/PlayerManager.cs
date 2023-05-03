@@ -51,10 +51,10 @@ public class PlayerManager : MonoBehaviour {
                 GameObject pirate = pirates[i];
                 if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
                     pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
-                    if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack once a second
+                    if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
                         // Can attack the player if the player is visible 
                         pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
-                        if ((Time.time - lastAttackTimes[i]) >= 1f) { 
+                        if ((Time.time - lastAttackTimes[i]) >= 1f) { // can only attack once a second
                             lastAttackTimes[i] = Time.time; 
                             // Attack the player 
                             float pirateDamage = 1f + (0.1f * pirateTypes[i]); // between 0.5 and 1 for the damage
