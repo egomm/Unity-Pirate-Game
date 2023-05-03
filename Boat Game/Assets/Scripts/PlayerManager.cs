@@ -8,20 +8,16 @@ public class PlayerManager : MonoBehaviour {
     private List<float> lastAttackTimes = new List<float>();
     private List<int> pirateTypes = new List<int>();
     public static double playerHealth = 100;
+    public static Vector3 playerCoordinates = new Vector3(0, 0, 0);
+
     // Start is called before the first frame update
-    public Text my_text;
     void Start() {
-        Debug.Log("hi");
-        Debug.Log(GameObject.FindGameObjectsWithTag("Health").Length);
-        GameObject healthText = GameObject.FindWithTag("Health");
-        Debug.Log(healthText);
-        my_text = healthText.GetComponent<Text>();
-        my_text.text = "hi";
+        playerCoordinates = transform.position;
     }
 
     // Update is called once per frame
     void FixedUpdate() {
-        // I maybe want to move this into player manager
+        playerCoordinates = transform.position;
         if (SceneManager.GetActiveScene().name == "Island Scene") {
             Vector3 centre = IslandManager.currentCentre;
             float radius = (float) IslandManager.islandInformation[centre]["radius"];
@@ -58,28 +54,13 @@ public class PlayerManager : MonoBehaviour {
                     if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack once a second
                         // Can attack the player if the player is visible 
                         pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
-                        if ((Time.time - lastAttackTimes[i]) >= 1f) { // DOESNT WORK
+                        if ((Time.time - lastAttackTimes[i]) >= 1f) { 
                             lastAttackTimes[i] = Time.time; 
                             // Attack the player 
-                            Debug.Log("ATTACK");
-                            Debug.Log("TYPE: " + pirateTypes[i]);
-                            float pirateDamage = 0.25f + (0.05f * pirateTypes[i]); // between 0.25 and 0.5 for the damage
+                            float pirateDamage = 1f + (0.1f * pirateTypes[i]); // between 0.5 and 1 for the damage
                             playerHealth -= pirateDamage;
-                            Debug.Log("HEALTH: " + playerHealth);
                         }
                     }
-                }
-                // Check if the pirate is out of the island radius 
-                if (Vector2.Distance(new Vector2(pirate.transform.position.x, pirate.transform.position.z), centreTwoDimensional) > multiplier) {
-                    float angle = 0;
-                    if (pirate.transform.position.x != 0) { // To avoid dividing my 0 
-                        angle = Mathf.Atan((pirate.transform.position.z - centre.z) / (pirate.transform.position.x - centre.x));
-                        multiplier *= (pirate.transform.position.x - centre.x) / Mathf.Abs(pirate.transform.position.x - centre.x);
-                    }
-                    // Get the new player positions based on trig
-                    float newPirateX = multiplier * Mathf.Cos(angle);
-                    float newPirateZ = multiplier * Mathf.Sin(angle);
-                    pirate.transform.position = new Vector3(newPirateX + centre.x, pirate.transform.position.y, newPirateZ + centre.z);
                 }
                 if (playerHealth <= 0) { // If the player health is less than 0, player is dead
                     Debug.Log("PLAYER DEAD");
