@@ -334,17 +334,17 @@ public class IslandManager : MonoBehaviour {
                             if (canSpawnPirate) { // Passed all test cases
                                 float randomPirateAngle = Random.Range(0f, 360f);
                                 GameObject pirateToSpawn;
-                                float pirateHealth = 50;
+                                float pirateHealth = 5; 
                                 if (Random.Range(0, 100) >= 96) {
                                     pirateToSpawn = pirateCaptain;
-                                    pirateHealth = 100;
+                                    pirateHealth += 5;
                                 } else {
                                     int pirateSpawnIndex = Random.Range(0, 4); // Pick an index from [0, 1, 2, 3]
-                                    pirateHealth = 50 + (pirateSpawnIndex + 1) * 10;
+                                    pirateHealth += (pirateSpawnIndex + 1); 
                                     pirateToSpawn = pirates[pirateSpawnIndex];
                                 }
                                 // Add the health of the players
-                                piratesHealth.Add(pirateHealth);
+                                piratesHealth.Add(pirateHealth); // The pirate health will range between 5-10 so that the player can kill the pirate within 2.5 - 5 seconds 
                                 pirateAngles.Add(new Vector3(0, randomPirateAngle, 0));
                                 pirateCoordinates.Add(pirateSpawnCoordinate);
                                 piratesToSpawn.Add(pirateToSpawn);
@@ -451,12 +451,15 @@ public class IslandManager : MonoBehaviour {
             List<Vector3> pirateAngles = (List<Vector3>)islandInformation[currentCoordinate]["pirateangles"]; // These will be the same size
             List<GameObject> piratesToSpawn = (List<GameObject>)islandInformation[currentCoordinate]["piratestospawn"];
             if (pirateIndex < pirateCoordinates.Count) { // Resolves out of bounds issues
-                GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex])); // Add more tests for this?
-                activePirates.Add(spawnedPirate);
-                List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
-                componentsList.Add(spawnedPirate);
-                activeIslandInformation[currentCoordinate] = componentsList;
-                if (pirateIndex < pirateCoordinates.Count - 1) {
+                List<float> piratesHealth = (List<float>) IslandManager.islandInformation[currentCoordinate]["pirateshealth"];
+                if (piratesHealth[pirateIndex] > 0) {  // Cannot spawn a dead pirate
+                    GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex]));
+                    activePirates.Add(spawnedPirate);
+                    List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
+                    componentsList.Add(spawnedPirate);
+                    activeIslandInformation[currentCoordinate] = componentsList;
+                }
+                if (pirateIndex < pirateCoordinates.Count - 1) { // Spawn the next pirate
                     pirateIndex++;
                     Invoke("SpawnPirates", 0.1f);
                 }

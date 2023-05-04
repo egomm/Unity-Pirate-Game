@@ -24,18 +24,17 @@ public class RaycastManager : MonoBehaviour {
                 if (hit.transform.tag == "Pirate") { // add distance checks
                     Debug.Log("Clicked pirate");
                     if (Vector3.Distance(hit.transform.position, transform.position) < 2.5f) { // Player is within two and a half units of the pirate
-                        if ((Time.time - lastAttackTime) >= 0.5f) { // can only attack once every 500ms
+                        if ((Time.time - lastAttackTime) >= 0.25f) { // can only attack once every 250ms
                             lastAttackTime = Time.time;
                             List<GameObject> pirates = IslandManager.activePirates;
                             List<float> piratesHealth = (List<float>) IslandManager.islandInformation[islandCoordinates]["pirateshealth"];
                             for (int i = 0; i < pirates.Count; i++) { 
                                 if (pirates[i] == hit.transform.gameObject) {
                                     // Attack the pirate
-                                    Debug.Log("Initial list: " + piratesHealth);
-                                    Debug.Log("Initial Health: " + piratesHealth[i]);
-                                    piratesHealth[i]--;
-                                    Debug.Log("New Health: " + piratesHealth[i]);
-                                    Debug.Log("Final list: " + piratesHealth);
+                                    piratesHealth[i]--; // Decrease the pirate's health by 1 each time the player clicks the pirate
+                                    if (piratesHealth[i] <= 0) {
+                                        Destroy(pirates[i]); // Destory the pirate if the pirate is less than or equal to 0 
+                                    }
                                     break;
                                 }
                             }
