@@ -11,16 +11,14 @@ public class StartingSceneGameManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() { 
         List<Vector3> islandCoordinates = IslandManager.islandCoordinates; // static
+        List<GameObject> activePirates = IslandManager.activePirates;
         Dictionary<Vector3, Dictionary<string, object>> islandInformation = IslandManager.islandInformation; // static
         islandCoordinates.Clear();
         islandInformation.Clear();
-        Debug.Log("STARTING SCENE"); 
-        Debug.Log(islandCoordinates.Count);
-        Debug.Log(islandInformation.Count);
+        activePirates.Clear();
         float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
         float magnitude = Random.Range(150f, 250f); // As this is the centre island, keep it close to the centre
-        Debug.Log(IslandManager.instance);
-        IslandManager.instance.InitaliseIsland(angle, magnitude, false, false); // keep attempting to initalise island
+        IslandManager.instance.InitaliseIsland(angle, magnitude, false, false); // initalise island
         Vector3 coordinate = IslandManager.islandCoordinates[0];
         IslandManager.currentCentre = coordinate;
         if (IslandManager.islandInformation.ContainsKey(coordinate)) {

@@ -4,43 +4,67 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class PlayerManager : MonoBehaviour {
+public class PlayerManager : MonoBehaviour { 
     private List<float> lastAttackTimes = new List<float>();
     private List<int> pirateTypes = new List<int>();
     public static double playerHealth = 100;
     public static Vector3 playerCoordinates = new Vector3(0, 0, 0);
     private float lastRegenerationTime = 0;
+    private float lastDrowingTime = 0;
+    private bool inWater = false;
 
     // Start is called before the first frame update
     void Start() {
+        Debug.Log("Started");
         playerCoordinates = transform.position;
+        lastDrowingTime = Time.time;
+        lastRegenerationTime = Time.time;
     }
 
     // Update is called once per frame
     void FixedUpdate() {
+        string activeSceneName = SceneManager.GetActiveScene().name;
         playerCoordinates = transform.position;
+        // Will need to upgrade this for pirate ships
+
         // Health regeneration system - 1hp every 5 seconds 
         // Only allow for the player to regenerate if they aren't on the dock
-        bool canRegenerate = true;
-        if (SceneManager.GetActiveScene().name == "Island Scene") {
+        if (activeSceneName == "Island Scene") {
             Vector3 islandCentre = IslandManager.currentCentre;
             float islandRadius = (float) IslandManager.islandInformation[islandCentre]["radius"];
             float centreTwoDimensionalDistance = Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(islandCentre.x, islandCentre.z));
             if (centreTwoDimensionalDistance > islandRadius) { // Can't regenerate health because the player isn't in range
-                canRegenerate = false;
+                lastRegenerationTime = Time.time;
             }
         }
-        // Also make it so that the player can't regenerate health if they are in the ocean -> make sure that the player drowns instead
-        if (canRegenerate) {
-            if ((Time.time-lastRegenerationTime) > 5f) { 
-                if (playerHealth < 99) { 
-                    playerHealth++;
-                } else {
-                    playerHealth = 100; 
+        
+        // Make it so that the player can't regenerate health if they are in the ocean -> make sure that the player drowns instead
+        if (activeSceneName == "Island Scene" || activeSceneName == "Starting Scene") {
+            if (playerCoordinates.y < 0 && inWater) { // Player is underwater 
+                lastRegenerationTime = Time.time; // Can't regenerate
+                if ((Time.time - lastDrowingTime) > 2f) { // Decrease the player health by for every two seconds the player is in water
+                    playerHealth--;
+                    lastDrowingTime = Time.time;
                 }
+            } else if (playerCoordinates.y < 0) { // Just entered water
+                inWater = true;
+                lastDrowingTime = Time.time;
+                lastRegenerationTime = Time.time; // Can't regenerate
+            } else { // Player isn't in water
+                inWater = false;
+            }
+        }
+
+        if ((Time.time-lastRegenerationTime) > 5f) { 
+            if (playerHealth < 99) { 
+                playerHealth++;
+            } else {
+                playerHealth = 100; 
             }
             lastRegenerationTime = Time.time;
         }
+
+        
 
         if (SceneManager.GetActiveScene().name == "Island Scene") {
             Vector3 centre = IslandManager.currentCentre;
@@ -86,10 +110,10 @@ public class PlayerManager : MonoBehaviour {
                         }
                     }
                 }
-                if (playerHealth <= 0) { // If the player health is less than 0, player is dead
-                    Debug.Log("PLAYER DEAD");
-                }
             }
+        }
+        if (playerHealth <= 0) { // If the player health is less than 0, player is dead
+            Debug.Log("PLAYER DEAD");
         }
     }
 }

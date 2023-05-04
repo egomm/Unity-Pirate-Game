@@ -435,10 +435,9 @@ public class IslandManager : MonoBehaviour {
             componentsList.Add(spawnedChest);
         }
         List<Vector3> pirateCoordinates = (List<Vector3>) islandInformation[currentCoordinate]["piratecoordinates"];
-        pirateIndex = 0;
-        Debug.Log("HELLO");
         activeIslandInformation.Add(coordinate, componentsList);
         if (pirateCoordinates.Count > 0) {
+            pirateIndex = 0;
             activePirates.Clear();
             Invoke("SpawnPirates", 0.25f);
         }
@@ -465,7 +464,7 @@ public class IslandManager : MonoBehaviour {
                 }
             }
         } else {
-            Debug.Log("WHY?");
+            Debug.Log("Island no longer exists");
         }
     }
 
