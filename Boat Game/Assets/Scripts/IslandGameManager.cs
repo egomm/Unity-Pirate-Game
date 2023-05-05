@@ -5,9 +5,9 @@ using UnityEngine;
 public class IslandGameManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
-        int count = 100-IslandManager.islandInformation.Count; 
+        int islandCount = 100-IslandManager.islandInformation.Count; 
         Debug.Log(IslandManager.instance);
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < islandCount; i++) {
             float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
             float magnitude = Random.Range(150f, 1000f); // Effectively distance from centre (0, 0)
             if (!IslandManager.instance.InitaliseIsland(angle, magnitude, true, true)) {
@@ -15,6 +15,7 @@ public class IslandGameManager : MonoBehaviour {
             }
         }
         Debug.Log(IslandManager.islandInformation.Count);
+        // Now initalise the pirate ships 
     }
 
     // Update is called once per frame
