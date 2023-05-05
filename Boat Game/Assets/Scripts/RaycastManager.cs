@@ -58,13 +58,40 @@ public class RaycastManager : MonoBehaviour {
                     Vector3 size = renderer.bounds.size;
                     Debug.Log(size);*/ // Use when more boats are added
                 }
+                if (hitTag == "Pirate Ship" && activeScene == "Game") {
+                    // Hit the pirate ship
+                    // length is ~15 at 0.2 Z scale so 75 at 1 z scale
+                    // need to base this off angle
+                    bool hasPirateShip = false;
+                    foreach (Vector3 coordinate in PirateShipManager.pirateShipCoordinates) {
+                        if (coordinate == hit.transform.position) {
+                            hasPirateShip = true;
+                            break;
+                        }
+                    }
+                    if (hasPirateShip) {
+                        float pirateShipAngle = Mathf.PI * (float) PirateShipManager.pirateShipInformation[hit.transform.position]["angle"]/180;
+                        float secondXAddon = 18.75f * 0.2f * Mathf.Sin(pirateShipAngle); // Replace the 0.2 with the pirate ship z scale 
+                        float secondZAddon = 18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
+                        Vector2 secondAddon = new Vector2(secondXAddon, secondZAddon);
+                        float thirdXAddon = -18.75f * 0.2f * Mathf.Sin(pirateShipAngle);
+                        float thirdZAddon = -18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
+                        Vector2 thirdAddon = new Vector2(thirdXAddon, thirdZAddon);
+                        float firstDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos);
+                        float secondDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + secondAddon);
+                        float thirdDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + thirdAddon);
+                        if (firstDistance < 5 || secondDistance < 5 || thirdDistance < 5) {
+                            Debug.Log("Can enter priate ship"); 
+                        }
+                    }
+                }
                 if (hitTag == "Dock" && activeScene == "Game") {
                     // Check the distance now using 3 combined radii
                     // Need to find which coordinate this dock is connected to
                     Vector3 islandCoordinate = new Vector3(0, 0, 0);
                     Vector3 dockCoordinate = new Vector3(0, 0, 0);
                     bool hasDock = false;
-                    foreach (var coordinate in IslandManager.islandCoordinates) {
+                    foreach (Vector3 coordinate in IslandManager.islandCoordinates) {
                         Vector3 dockCoord = (Vector3) IslandManager.islandInformation[coordinate]["dockcoordinates"];
                         if ((coordinate + dockCoord) == hit.transform.position) {
                             dockCoordinate = dockCoord;

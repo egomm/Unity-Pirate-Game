@@ -37,6 +37,9 @@ public class IslandGameManager : MonoBehaviour {
             float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z));
             if (!PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance < 50) {
                 PirateShipManager.instance.CreatePirateShip(coordinate);
+            } else if (PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance > 70) {
+                List<GameObject> componentsList = PirateShipManager.instance.activePirateShipInformation[coordinate];
+                PirateShipManager.instance.DeletePirateShip(coordinate, componentsList);
             }
         }
 

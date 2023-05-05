@@ -508,7 +508,7 @@ public class IslandManager : MonoBehaviour {
     }
 
     public void DeleteIsland(Vector3 coordinate, List<GameObject> componentsList) {
-        foreach (var component in componentsList) {
+        foreach (GameObject component in componentsList) {
             Destroy(component);
         }
         activeIslands.Remove(coordinate);
