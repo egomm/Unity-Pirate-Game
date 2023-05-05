@@ -9,6 +9,7 @@ TagManager:
   - Dock
   - Pirate
   - 'Health '
+  - Pirate Ship
   layers:
   - Default
   - TransparentFX

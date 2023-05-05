@@ -64,9 +64,11 @@ public class PlayerManager : MonoBehaviour {
             lastRegenerationTime = Time.time;
         }
 
-        
+        if (transform.position.y > 4 && SceneManager.GetActiveScene().name == "Game") { // Prevent the player from flying, sometimes the player was able to glitch up box colliders
+            transform.position = new Vector3(transform.position.x, WaveManager.instance.GetWaveHeight(transform.position.z), transform.position.z);
+        }
 
-        if (SceneManager.GetActiveScene().name == "Island Scene") {
+        if (SceneManager.GetActiveScene().name == "Island Scene") { 
             Vector3 centre = IslandManager.currentCentre;
             float radius = (float) IslandManager.islandInformation[centre]["radius"];
             Vector2 centreTwoDimensional = new Vector2(centre.x, centre.z);

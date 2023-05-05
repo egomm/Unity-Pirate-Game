@@ -15,13 +15,31 @@ public class IslandGameManager : MonoBehaviour {
             }
         }
         Debug.Log(IslandManager.islandInformation.Count);
-        // Now initalise the pirate ships 
+        // Now initalise 250 pirate ships 
+        int pirateShipCount = 250 - PirateShipManager.pirateShipCoordinates.Count;
+        for (int i = 0; i < pirateShipCount; i++) {
+            float angle = Random.Range(0, 2 * Mathf.PI); // Angle is based on (0, 0) positive x direction
+            float magnitude = Random.Range(150f, 1000f); // Distance from 0, 0
+            if (!PirateShipManager.instance.InitalisePirateShip(angle, magnitude)) {
+                i--;
+            } else {
+                Debug.Log("Spawned at: " + new Vector3(magnitude * Mathf.Cos(angle), 0, magnitude * Mathf.Sin(angle)));
+            }
+        }
+        Debug.Log(PirateShipManager.pirateShipCoordinates.Count);
     }
 
     // Update is called once per frame
     void Update() {
     //Debug.Log(IslandManager.instance);
         GameObject boat = GameObject.FindGameObjectWithTag("Boat");
+        foreach (Vector3 coordinate in PirateShipManager.pirateShipCoordinates) {
+            float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z));
+            if (!PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance < 50) {
+                PirateShipManager.instance.CreatePirateShip(coordinate);
+            }
+        }
+
         foreach (Vector3 coordinate in IslandManager.islandCoordinates) {
             // 40 from the distance and 5 from the dock distance and 5 to be safe
             float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z)); // distance between island coordinate and boat coordinate
