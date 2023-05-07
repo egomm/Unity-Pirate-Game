@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MovePlayer : MonoBehaviour {
     private Rigidbody playerRb;
@@ -51,19 +52,23 @@ public class MovePlayer : MonoBehaviour {
             }
         }
         playerAnim.SetBool("moving", Input.GetAxis("Vertical") > 0); // Set animation if player is moving forward
-        float radius = (float) IslandManager.islandInformation[centre]["radius"];
-        float multiplier = 2f * radius;
-        Vector2 centreTwoDimensional = new Vector2(centre.x, centre.z);
-        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), centreTwoDimensional) > multiplier) { // If the player is more than 2x the radius from the centre 
-            float angle = 0;
-            if (playerRb.position.x != 0) { // To avoid dividing my 0 
-                angle = Mathf.Atan((playerRb.position.z-centre.z)/(playerRb.position.x-centre.x));
-                multiplier *= (playerRb.position.x-centre.x)/Mathf.Abs(playerRb.position.x-centre.x);
+        if (SceneManager.GetActiveScene().name != "Pirate Ship") {
+            float radius = (float)IslandManager.islandInformation[centre]["radius"];
+            float multiplier = 2f * radius;
+            Vector2 centreTwoDimensional = new Vector2(centre.x, centre.z);
+            if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), centreTwoDimensional) > multiplier) { // If the player is more than 2x the radius from the centre 
+                float angle = 0;
+                if (playerRb.position.x != 0) { // To avoid dividing my 0 
+                    angle = Mathf.Atan((playerRb.position.z - centre.z) / (playerRb.position.x - centre.x));
+                    multiplier *= (playerRb.position.x - centre.x) / Mathf.Abs(playerRb.position.x - centre.x);
+                }
+                // Get the new player positions based on trig
+                float newPlayerX = multiplier * Mathf.Cos(angle);
+                float newPlayerZ = multiplier * Mathf.Sin(angle);
+                playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);
             }
-            // Get the new player positions based on trig
-            float newPlayerX = multiplier*Mathf.Cos(angle);
-            float newPlayerZ = multiplier*Mathf.Sin(angle);
-            playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);
+        } else { // DO THE CONSTRAINS FOR PIRATE SHIP MOVEMENT!
+
         }
     }
 
@@ -77,7 +82,7 @@ public class MovePlayer : MonoBehaviour {
     }*/
 
     private void OnCollisionEnter(Collision collision) { // If standing on boat/island/dock, allow the player to jump
-        if (collision.gameObject.CompareTag("Island") || collision.gameObject.CompareTag("Boat") || collision.gameObject.CompareTag("Dock")) {
+        if (collision.gameObject.CompareTag("Island") || collision.gameObject.CompareTag("Boat") || collision.gameObject.CompareTag("Dock") || collision.gameObject.CompareTag("Pirate Ship")) {
             isOnGround = true;
         }
     }

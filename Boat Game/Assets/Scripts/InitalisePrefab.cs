@@ -12,8 +12,8 @@ public class InitalisePrefab : MonoBehaviour {
 	void Start() {
 		ocean.GetComponent<WaveManager>().amplitude = 0; // Initalise the prefab information
 		ocean.GetComponent<WaveManager>().offset = 0;
-		for (int x = -2; x <= 2; x++) { // Initially spawn a 80x80 square 
-			for (int z = -2; z <= 2; z++) {
+		for (int x = -3; x <= 3; x++) { // Initially spawn a 120x120 square 
+			for (int z = -3; z <= 3; z++) {
 				spawnBigSquare(20*x, 20*z);
 				centres.Add(new xzCoordinates(20*x, 20*z));
 			}
@@ -75,7 +75,7 @@ public class InitalisePrefab : MonoBehaviour {
 	void destroyCentres(Vector2 boatCoordinates, Dictionary<xzCoordinates, GameObject[]> prefabsToDestory) {
 		List<xzCoordinates> toRemove = new List<xzCoordinates>();
 		foreach (var item in prefabsToDestory) { // Iterate over the prefabs
-			if (Vector2.Distance(boatCoordinates, new Vector2(item.Key.x, item.Key.z)) > 50) { 
+			if (Vector2.Distance(boatCoordinates, new Vector2(item.Key.x, item.Key.z)) > 80) { 
 				toRemove.Add(item.Key); // remove this after (otherwise will cause issues if iterating while removing)
 				for (int i = 0; i < item.Value.Length; i++) {
 					Destroy(item.Value[i]); // Destory the prefabs (of the big square) if the big square is more than x units away from the 
@@ -101,11 +101,11 @@ public class InitalisePrefab : MonoBehaviour {
 		float boatZ = boat.transform.position.z;
 		int normalisedX = (int) Mathf.Round(boatX/20); // Divide by 20 as the dimensions of the big square are 20*20
 		int normalisedZ = (int) Mathf.Round(boatZ/20);
-		for (int x = (normalisedX-1); x <= (normalisedX+1); x++) {
-			for (int z = (normalisedZ-1); z <= (normalisedZ+1); z++) {
+		for (int x = (normalisedX-2); x <= (normalisedX+2); x++) {
+			for (int z = (normalisedZ-2); z <= (normalisedZ+2); z++) {
 				int centreX = 20*x;
 				int centreZ = 20*z;
-				if (twoDimensionalDistance(boatX, boatZ, centreX, centreZ) < 40) { // If the boat is less than 40 units from the centre initalise the square 
+				if (twoDimensionalDistance(boatX, boatZ, centreX, centreZ) < 60) { // If the boat is less than 70 units from the centre initalise the square 
 					bool contains = false;
 					foreach (xzCoordinates centre in centres) { // .Contains() will not work here as I am comparing custom constructors
 						if (centre.x == centreX && centre.z == centreZ) {

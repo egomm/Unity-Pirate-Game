@@ -474,8 +474,8 @@ public class IslandManager : MonoBehaviour {
         float radius = (float) islandInformation[coordinate]["radius"];
         // Spawn prefabs within 4x the radius of the island, and disallow the player out of 1.75x the radius of the island
         // Ocean prefab is 10x10
-        int min = (int) Mathf.Round(radius / 10) * -4;
-        int max = (int) Mathf.Round(radius / 10) * 4;
+        int min = (int) Mathf.Round(radius / 10) * -6;
+        int max = (int) Mathf.Round(radius / 10) * 6;
         for (int x = min; x <= max; x++) {
             for (int z = min; z <= max; z++) {
                 Instantiate(ocean, new Vector3(10 * x, 0, 10 * z) + coordinate, Quaternion.identity);

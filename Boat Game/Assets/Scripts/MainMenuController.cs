@@ -20,8 +20,7 @@ public class MainMenuController : MonoBehaviour {
     public void LoadStartScene() {
         if (SceneManager.GetActiveScene().name != "Starting Scene") {
             Debug.Log("Loading Starting Scene");
-            //SceneManager.LoadScene("Starting Scene");
-            SceneManager.LoadSceneAsync("Starting Scene");
+            SceneManager.LoadScene("Starting Scene");
         }
     }
 

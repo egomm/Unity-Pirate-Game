@@ -10,13 +10,16 @@ public class PirateShipManager : MonoBehaviour {
     public List<Vector3> activePirateShips = new List<Vector3>();
     public Dictionary<Vector3, List<GameObject>> activePirateShipInformation = new Dictionary<Vector3, List<GameObject>>();
     public GameObject pirateShip;
+    public GameObject player;
+    public GameObject ocean;
+    public GameObject seaFloor;
     public static PirateShipManager instance;
     void Awake() {
         instance = this;
     }
 
     void Start() {
-
+        
     }
 
     // Update is called once per frame
@@ -56,7 +59,17 @@ public class PirateShipManager : MonoBehaviour {
     }
 
     public void CreatePirateShipAndOcean(Vector3 coordinate) {
-
+        CreatePirateShip(coordinate);
+        Instantiate(player, coordinate + new Vector3(0, 2, 0), Quaternion.identity);
+        int min = -6;
+        int max = 6;
+        for (int x = min; x <= max; x++) {
+            for (int z = min; z <= max; z++) {
+                Instantiate(ocean, new Vector3(10 * x, 0, 10 * z) + coordinate, Quaternion.identity);
+                Instantiate(seaFloor, new Vector3(10 * x, -3, 10 * z) + coordinate, Quaternion.identity);
+                //Debug.Log(new Vector3(10 * x, 0, 10 * z) + coordinate);
+            }
+        }
     }
 
     public void DeletePirateShip(Vector3 coordinate, List<GameObject> componentsList) {
