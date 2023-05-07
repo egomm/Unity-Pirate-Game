@@ -52,11 +52,12 @@ public class MovePlayer : MonoBehaviour {
             }
         }
         playerAnim.SetBool("moving", Input.GetAxis("Vertical") > 0); // Set animation if player is moving forward
+        Vector2 playerTwoDimensional = new Vector2(transform.position.x, transform.position.z);
         if (SceneManager.GetActiveScene().name != "Pirate Ship") {
             float radius = (float)IslandManager.islandInformation[centre]["radius"];
             float multiplier = 2f * radius;
             Vector2 centreTwoDimensional = new Vector2(centre.x, centre.z);
-            if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), centreTwoDimensional) > multiplier) { // If the player is more than 2x the radius from the centre 
+            if (Vector2.Distance(playerTwoDimensional, centreTwoDimensional) > multiplier) { // If the player is more than 2x the radius from the centre 
                 float angle = 0;
                 if (playerRb.position.x != 0) { // To avoid dividing my 0 
                     angle = Mathf.Atan((playerRb.position.z - centre.z) / (playerRb.position.x - centre.x));
@@ -67,8 +68,21 @@ public class MovePlayer : MonoBehaviour {
                 float newPlayerZ = multiplier * Mathf.Sin(angle);
                 playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);
             }
-        } else { // DO THE CONSTRAINS FOR PIRATE SHIP MOVEMENT!
-
+        } else {
+            float multiplier = 15f;
+            Vector3 pirateShipCoordinates = PirateSceneManager.currentPirateShipCoordinates;
+            Vector2 pirateShipTwoDimensional = new Vector2(pirateShipCoordinates.x, pirateShipCoordinates.z);
+            if (Vector2.Distance(playerTwoDimensional, pirateShipTwoDimensional) > multiplier) {
+                float angle = 0;
+                if (playerRb.position.x != 0) { // To avoid dividing my 0 
+                    angle = Mathf.Atan((playerRb.position.z - pirateShipCoordinates.z) / (playerRb.position.x - pirateShipCoordinates.x));
+                    multiplier *= (playerRb.position.x - pirateShipCoordinates.x) / Mathf.Abs(playerRb.position.x - pirateShipCoordinates.x);
+                }
+                // Get the new player positions based on trig
+                float newPlayerX = multiplier * Mathf.Cos(angle);
+                float newPlayerZ = multiplier * Mathf.Sin(angle);
+                playerRb.position = new Vector3(newPlayerX + pirateShipCoordinates.x, playerRb.position.y, newPlayerZ + pirateShipCoordinates.z);
+            }
         }
     }
 

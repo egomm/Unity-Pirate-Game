@@ -14,6 +14,9 @@ public class PirateShipManager : MonoBehaviour {
     public GameObject ocean;
     public GameObject seaFloor;
     public static PirateShipManager instance;
+    // Pirates
+    public GameObject[] pirates = new GameObject[4];
+    public GameObject pirateCaptain;
     void Awake() {
         instance = this;
     }
@@ -41,8 +44,27 @@ public class PirateShipManager : MonoBehaviour {
                 return false; // Pirate ships must be at least 15 units from circumfrence of island
             }
         }
-        Dictionary<string, object> informationDictionary = new Dictionary<string, object>();
         float pirateShipAngle = Random.Range(0f, 360f);
+        float pirateShipAngleRadians = Mathf.PI * pirateShipAngle / 180f;
+        // Initalise pirate
+        List<Vector3> pirateCoordinates = new List<Vector3>();
+        List<Vector3> pirateAngles = new List<Vector3>();
+        List<GameObject> piratesToSpawn = new List<GameObject>();
+        List<float> piratesHealth = new List<float>();
+        int pirateCount = Random.Range(1, 3); // Spawn one or two pirates
+        for (int i = 0; i < pirateCount; i++) {
+            // Need to make it so that the pirate spawns within range of the pirate ship
+            float secondXAddon = 18.75f * 0.2f * Mathf.Sin(pirateShipAngle); // Replace the 0.2 with the pirate ship z scale 
+            float secondZAddon = 18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
+            Vector2 secondAddon = new Vector2(secondXAddon, secondZAddon);
+            float thirdXAddon = -18.75f * 0.2f * Mathf.Sin(pirateShipAngle);
+            float thirdZAddon = -18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
+            Vector2 thirdAddon = new Vector2(thirdXAddon, thirdZAddon);
+            float firstDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos);
+            float secondDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + secondAddon);
+            float thirdDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + thirdAddon);
+        }
+        Dictionary<string, object> informationDictionary = new Dictionary<string, object>();
         pirateShipCoordinates.Add(pirateShipCoordinate);
         informationDictionary.Add("angle", pirateShipAngle);
         pirateShipInformation.Add(pirateShipCoordinate, informationDictionary);
@@ -56,6 +78,7 @@ public class PirateShipManager : MonoBehaviour {
         componentsList.Add(pirateShipCreated);
         activePirateShips.Add(coordinate);
         activePirateShipInformation.Add(coordinate, componentsList);
+        // Spawn the pirates now 
     }
 
     public void CreatePirateShipAndOcean(Vector3 coordinate) {
