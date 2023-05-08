@@ -51,22 +51,56 @@ public class PirateShipManager : MonoBehaviour {
         List<Vector3> pirateAngles = new List<Vector3>();
         List<GameObject> piratesToSpawn = new List<GameObject>();
         List<float> piratesHealth = new List<float>();
-        int pirateCount = Random.Range(1, 3); // Spawn one or two pirates
+        int pirateCount = 2; //Random.Range(1, 3); // Spawn one or two pirates
         for (int i = 0; i < pirateCount; i++) {
             // Need to make it so that the pirate spawns within range of the pirate ship
-            float secondXAddon = 18.75f * 0.2f * Mathf.Sin(pirateShipAngle); // Replace the 0.2 with the pirate ship z scale 
-            float secondZAddon = 18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
-            Vector2 secondAddon = new Vector2(secondXAddon, secondZAddon);
-            float thirdXAddon = -18.75f * 0.2f * Mathf.Sin(pirateShipAngle);
-            float thirdZAddon = -18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
-            Vector2 thirdAddon = new Vector2(thirdXAddon, thirdZAddon);
-            float firstDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos);
-            float secondDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + secondAddon);
-            float thirdDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + thirdAddon);
+            // Make the values go between -18.75f and 18.75f at intervals of 4.6875f, so -18.75, -14.0625, 9.375, 4.6875, 0
+            int randomCentreInt = Random.Range(-4, 5); 
+            float randomCentreMultiplier = 4.6875f * 0.2f * randomCentreInt; 
+            float randomCentreXAddon = randomCentreMultiplier * Mathf.Sin(pirateShipAngle);
+            float randomCentrezAddon = randomCentreMultiplier * Mathf.Cos(pirateShipAngle);
+            Vector3 randomCentre = new Vector3(randomCentreXAddon, 0, randomCentrezAddon);
+            float pirateInitaliseAngle = Random.Range(0f, 2*Mathf.PI);
+            float pirateRadius = Random.Range(0f, 0.75f);
+            float pirateShipXAddon = pirateRadius * Mathf.Sin(pirateInitaliseAngle);
+            float pirateShipZAddon = pirateRadius * Mathf.Cos(pirateInitaliseAngle);
+            Vector3 pirateCoordinate = randomCentre + new Vector3(pirateShipXAddon, 2, pirateShipZAddon);
+            // they are being initalised too close
+            bool validPirate = true;
+            foreach (Vector3 pirateCoord in pirateCoordinates) {
+                if (Vector3.Distance(pirateCoord, pirateCoordinate) < 1f) {
+                    validPirate = false;
+                    break;
+                }
+            }
+            if (validPirate) {
+                float pirateAngle = Random.Range(0f, 360f); // Random pirate angle in degrees
+                GameObject pirateToSpawn;
+                float pirateHealth = 5; 
+                if (Random.Range(0, 100) >= 96) {
+                    pirateToSpawn = pirateCaptain;
+                    pirateHealth += 5;
+                } else {
+                    int pirateSpawnIndex = Random.Range(0, 4); // Pick an index from [0, 1, 2, 3]
+                    pirateHealth += (pirateSpawnIndex + 1); 
+                    pirateToSpawn = pirates[pirateSpawnIndex];
+                }
+                pirateCoordinates.Add(pirateCoordinate);
+                pirateAngles.Add(new Vector3(0, pirateAngle, 0));
+                piratesHealth.Add(pirateHealth);
+                piratesToSpawn.Add(pirateToSpawn);
+            } else {
+                i--;
+            }
         }
         Dictionary<string, object> informationDictionary = new Dictionary<string, object>();
         pirateShipCoordinates.Add(pirateShipCoordinate);
+
         informationDictionary.Add("angle", pirateShipAngle);
+        informationDictionary.Add("piratecoordinates", pirateCoordinates);
+        informationDictionary.Add("pirateangles", pirateAngles);
+        informationDictionary.Add("piratestospawn", piratesToSpawn);
+        informationDictionary.Add("pirateshealth", piratesHealth);
         pirateShipInformation.Add(pirateShipCoordinate, informationDictionary);
         return true;
     }
@@ -79,6 +113,13 @@ public class PirateShipManager : MonoBehaviour {
         activePirateShips.Add(coordinate);
         activePirateShipInformation.Add(coordinate, componentsList);
         // Spawn the pirates now 
+        List<GameObject> pirates = (List<GameObject>) pirateShipInformation[coordinate]["piratestospawn"];
+        List<Vector3> pirateCoordinates = (List<Vector3>) pirateShipInformation[coordinate]["piratecoordinates"];
+        List<Vector3> pirateAngles = (List<Vector3>) pirateShipInformation[coordinate]["pirateangles"];
+        for (int i = 0; i < pirates.Count; i++) {
+            GameObject spawnedPirate = Instantiate(pirates[i], coordinate + pirateCoordinates[i], Quaternion.Euler(pirateAngles[i]));
+            Debug.Log("SPAWNED PIRATE " + (coordinate + pirateCoordinates[i]));
+        }
     }
 
     public void CreatePirateShipAndOcean(Vector3 coordinate) {

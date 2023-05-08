@@ -35,9 +35,9 @@ public class IslandGameManager : MonoBehaviour {
         GameObject boat = GameObject.FindGameObjectWithTag("Boat");
         foreach (Vector3 coordinate in PirateShipManager.pirateShipCoordinates) {
             float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z));
-            if (!PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance < 50) {
+            if (!PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance < 20) {
                 PirateShipManager.instance.CreatePirateShip(coordinate);
-            } else if (PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance > 70) {
+            } else if (PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance > 50) {
                 List<GameObject> componentsList = PirateShipManager.instance.activePirateShipInformation[coordinate];
                 PirateShipManager.instance.DeletePirateShip(coordinate, componentsList);
             }
@@ -47,9 +47,9 @@ public class IslandGameManager : MonoBehaviour {
             // 40 from the distance and 5 from the dock distance and 5 to be safe
             float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z)); // distance between island coordinate and boat coordinate
             float radius = (float) IslandManager.islandInformation[coordinate]["radius"];
-            if (!IslandManager.instance.activeIslands.Contains(coordinate) && distance < (50 + radius)) {
+            if (!IslandManager.instance.activeIslands.Contains(coordinate) && distance < (15 + radius)) {
                 IslandManager.instance.CreateIsland(coordinate);
-            } else if (IslandManager.instance.activeIslands.Contains(coordinate) && distance > (70 + radius)) {
+            } else if (IslandManager.instance.activeIslands.Contains(coordinate) && distance > (30 + radius)) {
                 Debug.Log("NEED TO REMOVE!");
                 // Remove the island (Destroy())
                 List<GameObject> componentsList = IslandManager.instance.activeIslandInformation[coordinate];
