@@ -53,7 +53,7 @@ public class RaycastManager : MonoBehaviour {
                 string hitTag = hit.transform.tag;
                 if (hitDistance < 4 && hitTag == "Boat" && transform.position.y > hit.transform.position.y && activeScene != "Game") {
                     Debug.Log("Loading Game");
-                    SceneManager.LoadScene("Game");
+                    SceneManager.LoadSceneAsync("Game");
                     /*MeshRenderer renderer = hit.transform.GetComponent<MeshRenderer>();
                     Vector3 size = renderer.bounds.size;
                     Debug.Log(size);*/ // Use when more boats are added

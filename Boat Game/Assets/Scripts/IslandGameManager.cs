@@ -16,7 +16,7 @@ public class IslandGameManager : MonoBehaviour {
         }
         Debug.Log(IslandManager.islandInformation.Count);
         // Now initalise 250 pirate ships 
-        int pirateShipCount = 250 - PirateShipManager.pirateShipCoordinates.Count;
+        int pirateShipCount = 500 - PirateShipManager.pirateShipCoordinates.Count;
         for (int i = 0; i < pirateShipCount; i++) {
             float angle = Random.Range(0, 2 * Mathf.PI); // Angle is based on (0, 0) positive x direction
             float magnitude = Random.Range(150f, 1000f); // Distance from 0, 0
@@ -35,8 +35,8 @@ public class IslandGameManager : MonoBehaviour {
         GameObject boat = GameObject.FindGameObjectWithTag("Boat");
         foreach (Vector3 coordinate in PirateShipManager.pirateShipCoordinates) {
             float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z));
-            if (!PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance < 20) {
-                PirateShipManager.instance.CreatePirateShip(coordinate);
+            if (!PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance < 30) {
+                PirateShipManager.instance.CreatePirateShip(coordinate, false);
             } else if (PirateShipManager.instance.activePirateShips.Contains(coordinate) && distance > 50) {
                 List<GameObject> componentsList = PirateShipManager.instance.activePirateShipInformation[coordinate];
                 PirateShipManager.instance.DeletePirateShip(coordinate, componentsList);
