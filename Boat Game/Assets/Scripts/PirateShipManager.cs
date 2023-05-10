@@ -146,7 +146,7 @@ public class PirateShipManager : MonoBehaviour {
         }
         // Need to spawn the player's boat next to the pirate ship 
         float boatAngleDegrees = (float) pirateShipInformation[coordinate]["angle"];
-        float boatAngleRadians = boatAngleDegrees*180/Mathf.PI;
+        float boatAngleRadians = boatAngleDegrees*Mathf.PI/180f;
         Debug.Log("ANGLE!: " + boatAngleDegrees);
         float xAddon = 6;
         float zAddon = 6;
@@ -157,9 +157,30 @@ public class PirateShipManager : MonoBehaviour {
             xAddon = -6 * Mathf.Cos(boatAngleRadians) * -coordinate.x/Mathf.Abs(coordinate.x); // Adjust this by the pirate ship scale
             zAddon = -6 * Mathf.Sin(boatAngleRadians) * -coordinate.z/Mathf.Abs(coordinate.z);
         }
+        xAddon = 6 * Mathf.Cos(boatAngleRadians - (Mathf.PI/2)); // Adjust this by the pirate ship scale
+        zAddon = 6 * Mathf.Sin(boatAngleRadians - (Mathf.PI/2));
+        Debug.Log(boatAngleRadians);
+        if (boatAngleRadians >= 0 && boatAngleRadians <= Mathf.PI/2) {
+            Debug.Log("FIRST");
+            xAddon = -Mathf.Abs(4 * Mathf.Cos(Mathf.PI/2 - boatAngleRadians));
+            zAddon = Mathf.Abs(4 * Mathf.Sin(Mathf.PI/2 - boatAngleRadians));
+        } else if (boatAngleRadians > Mathf.PI/2 && boatAngleRadians <= Mathf.PI) {
+            Debug.Log("SECOND");
+            xAddon = -Mathf.Abs(4 * Mathf.Cos(Mathf.PI/2 - (boatAngleRadians % Mathf.PI/2)));
+            zAddon = -Mathf.Abs(4 * Mathf.Sin(Mathf.PI/2 - (boatAngleRadians % Mathf.PI/2)));
+        } else if (boatAngleRadians > Mathf.PI && boatAngleRadians <= 3*Mathf.PI/2) {
+            Debug.Log("THIRD");
+            xAddon = Mathf.Abs(4 * Mathf.Cos((boatAngleRadians % Mathf.PI/2)));
+            zAddon = Mathf.Abs(4 * Mathf.Sin((boatAngleRadians % Mathf.PI/2)));
+        } else if (boatAngleRadians > 3*Mathf.PI/2 && boatAngleRadians <= 2*Mathf.PI) {
+            Debug.Log("FOURTH");
+            xAddon = Mathf.Abs(4 * Mathf.Cos(Mathf.PI/2 - (boatAngleRadians % Mathf.PI/2)));
+            zAddon = Mathf.Abs(4 * Mathf.Sin(Mathf.PI/2 - (boatAngleRadians % Mathf.PI/2)));
+        }
         Vector3 boatRight = new Vector3(Mathf.Cos(boatAngleRadians), 0f, Mathf.Sin(boatAngleRadians));
         Vector3 boatForward = new Vector3(-Mathf.Sin(boatAngleRadians), 0f, Mathf.Cos(boatAngleRadians));
         Vector3 spawnPosition = boatRight * 10 * Mathf.Cos(boatAngleRadians) + boatForward * 10 * Mathf.Sin(boatAngleRadians);
+        Debug.Log("RIGHT: " + boatRight);
         Debug.Log("TEST: " + spawnPosition);
         Debug.Log("SIN!: " +  Mathf.Sin(boatAngleRadians));
         Debug.Log("COS!: " + Mathf.Cos(boatAngleRadians));
