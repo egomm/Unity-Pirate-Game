@@ -348,6 +348,9 @@ public class IslandManager : MonoBehaviour {
                                 pirateAngles.Add(new Vector3(0, randomPirateAngle, 0));
                                 pirateCoordinates.Add(pirateSpawnCoordinate);
                                 piratesToSpawn.Add(pirateToSpawn);
+                                Debug.Log("TO SPAWN? " + piratesToSpawn[0]);
+                                Debug.Log(pirates[0]);
+                                Debug.Log(pirateCaptain);
                             }
                         }
                     }
@@ -452,6 +455,10 @@ public class IslandManager : MonoBehaviour {
             if (pirateIndex < pirateCoordinates.Count) { // Resolves out of bounds issues
                 List<float> piratesHealth = (List<float>) IslandManager.islandInformation[currentCoordinate]["pirateshealth"];
                 if (piratesHealth[pirateIndex] > 0) {  // Cannot spawn a dead pirate
+                    Debug.Log("Spawning pirate?");
+                    Debug.Log(piratesToSpawn[pirateIndex]);
+                    Debug.Log(currentCoordinate + pirateCoordinates[pirateIndex]);
+                    Debug.Log(Quaternion.Euler(pirateAngles[pirateIndex]));
                     GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex]));
                     activePirates.Add(spawnedPirate);
                     List<GameObject> componentsList = activeIslandInformation[currentCoordinate];

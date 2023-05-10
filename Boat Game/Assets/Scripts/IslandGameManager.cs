@@ -5,21 +5,22 @@ using UnityEngine;
 public class IslandGameManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
-        int islandCount = 100-IslandManager.islandInformation.Count; 
+        int islandCount = 150-IslandManager.islandInformation.Count; 
         Debug.Log(IslandManager.instance);
         for (int i = 0; i < islandCount; i++) {
             float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
-            float magnitude = Random.Range(150f, 1000f); // Effectively distance from centre (0, 0)
+            // To calculate magnitude, randomise an area of pi*r^2 -> pi*1000^2 then calculate a new radius with r=sqrt(area/pi)
+            float magnitude = Mathf.Sqrt(Random.Range(0f, Mathf.PI*Mathf.Pow(1000, 2))/Mathf.PI); // Effectively distance from centre (0, 0)
             if (!IslandManager.instance.InitaliseIsland(angle, magnitude, true, true)) {
                 i--;
             }
         }
         Debug.Log(IslandManager.islandInformation.Count);
-        // Now initalise 250 pirate ships 
+        // Now initalise 500 pirate ships 
         int pirateShipCount = 500 - PirateShipManager.pirateShipCoordinates.Count;
         for (int i = 0; i < pirateShipCount; i++) {
             float angle = Random.Range(0, 2 * Mathf.PI); // Angle is based on (0, 0) positive x direction
-            float magnitude = Random.Range(150f, 1000f); // Distance from 0, 0
+            float magnitude = Mathf.Sqrt(Random.Range(0f, Mathf.PI*Mathf.Pow(1000, 2))/Mathf.PI); // Distance from 0, 0
             if (!PirateShipManager.instance.InitalisePirateShip(angle, magnitude)) {
                 i--;
             } else {

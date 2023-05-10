@@ -95,7 +95,6 @@ public class MoveBoat : MonoBehaviour
             playerRb.velocity = playerRb.velocity.normalized * (maxSpeed-2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)));
             speed = Mathf.RoundToInt((maxSpeed-2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)))*3.6f);
         }
-        speedometerText.SetText("Speed: " + speed + " kmph");
     }
 
     private float ConvertToRadians(float degrees) {

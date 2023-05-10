@@ -205,6 +205,7 @@ MonoBehaviour:
   player: {fileID: 6030520112770890992, guid: 93f2b96b0f196984bb086755ea8b9624, type: 3}
   ocean: {fileID: 1253786579061247143, guid: e835b36f4d2413c4fba57f7910fecca3, type: 3}
   seaFloor: {fileID: 5169790274538693797, guid: 67ba7fef99a72004391e506969c33050, type: 3}
+  boat: {fileID: 5151524194615792976, guid: 441471feec19b984f96c5661edd0c16f, type: 3}
   pirates:
   - {fileID: 1400547421235526449, guid: ffe3ad23be052d84c83952a08a0f52c7, type: 3}
   - {fileID: 3617425054280710114, guid: acd8c4148cf99584195b07aeb0585f26, type: 3}
@@ -290,7 +291,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1

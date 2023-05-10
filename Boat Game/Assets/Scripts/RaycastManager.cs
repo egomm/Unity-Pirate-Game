@@ -15,7 +15,9 @@ public class RaycastManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        string activeScene = SceneManager.GetActiveScene().name;
         Vector3 islandCoordinates = IslandManager.currentCentre;
+        Vector3 pirateShipCoordinates = PirateSceneManager.currentPirateShipCoordinates;
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Creates a ray from the from the camera through a screen point (in this case the mouse position)
         if (Input.GetMouseButtonDown(0)) { // If left click is pressed
@@ -26,8 +28,16 @@ public class RaycastManager : MonoBehaviour {
                     if (Vector3.Distance(hit.transform.position, transform.position) < 2.5f) { // Player is within two and a half units of the pirate
                         if ((Time.time - lastAttackTime) >= 0.25f) { // can only attack once every 250ms
                             lastAttackTime = Time.time;
-                            List<GameObject> pirates = IslandManager.activePirates;
-                            List<float> piratesHealth = (List<float>) IslandManager.islandInformation[islandCoordinates]["pirateshealth"];
+                            // only for island scene
+                            List<GameObject> pirates = new List<GameObject>();
+                            List<float> piratesHealth = new List<float>();
+                            if (activeScene == "Island Scene") { // Island scene
+                                pirates = IslandManager.activePirates;
+                                piratesHealth = (List<float>) IslandManager.islandInformation[islandCoordinates]["pirateshealth"];
+                            } else if (activeScene == "Pirate Ship") {
+                                pirates = PirateShipManager.activePirates;
+                                piratesHealth = (List<float>) PirateShipManager.pirateShipInformation[pirateShipCoordinates]["pirateshealth"];
+                            }
                             for (int i = 0; i < pirates.Count; i++) { 
                                 if (pirates[i] == hit.transform.gameObject) {
                                     // Attack the pirate
@@ -48,7 +58,6 @@ public class RaycastManager : MonoBehaviour {
             if (Physics.Raycast(ray, out hit)) { // using out because hit is for output only 
                 Vector2 normalisedPlayerPos = new Vector2(rb.transform.position.x, rb.transform.position.z);
                 Vector2 normalisedHitPos = new Vector2(hit.transform.position.x, hit.transform.position.z);
-                string activeScene = SceneManager.GetActiveScene().name;
                 float hitDistance = Vector2.Distance(normalisedHitPos, normalisedPlayerPos); // Get the distance between the hit objects position and the player position
                 string hitTag = hit.transform.tag;
                 if (hitDistance < 4 && hitTag == "Boat" && transform.position.y > hit.transform.position.y && activeScene != "Game") {
