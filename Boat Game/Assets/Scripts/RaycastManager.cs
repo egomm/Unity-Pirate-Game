@@ -41,8 +41,15 @@ public class RaycastManager : MonoBehaviour {
                             for (int i = 0; i < pirates.Count; i++) { 
                                 if (pirates[i] == hit.transform.gameObject) {
                                     // Attack the pirate
-                                    piratesHealth[i]--; // Decrease the pirate's health by 1 each time the player clicks the pirate
+                                    piratesHealth[i] -= 2; // Decrease the pirate's health by 2 each time the player clicks the pirate
                                     if (piratesHealth[i] <= 0) {
+                                        PlayerManager.piratesKilled++;
+                                        if (activeScene == "Pirate Ship") {
+                                            GameObject[] activePirates = GameObject.FindGameObjectsWithTag("Pirate");
+                                            if (activePirates.Length <= 1) {
+                                                PlayerManager.goldLooted += 500; // placeholder value
+                                            }
+                                        }
                                         Destroy(pirates[i]); // Destory the pirate if the pirate is less than or equal to 0 
                                     }
                                     break;
@@ -66,6 +73,38 @@ public class RaycastManager : MonoBehaviour {
                     /*MeshRenderer renderer = hit.transform.GetComponent<MeshRenderer>();
                     Vector3 size = renderer.bounds.size;
                     Debug.Log(size);*/ // Use when more boats are added
+                }
+                if (hitDistance < 4 && hitTag == "Chest" && activeScene == "Island Scene") {
+                    // Find the specific chest 
+                    Vector3 islandCoordinate = IslandManager.currentCentre;
+                    Debug.Log("CLICKED CHEST! " + islandCoordinate);
+                    List<Vector3> chestCoordinates = (List<Vector3>) IslandManager.islandInformation[islandCoordinate]["chestcoordinates"];
+                    List<int> chestGold = (List<int>) IslandManager.islandInformation[islandCoordinate]["chestgold"];
+                    List<int> maxChestGold = (List<int>) IslandManager.islandInformation[islandCoordinate]["maxchestgold"];
+                    Debug.Log("HIT: " + hit.transform.position);
+                    float shortestDistance = 1000;
+                    int index = 0;
+                    if (chestCoordinates.Count > 0) {
+                        for (int i = 0; i < chestCoordinates.Count; i++) { // Do it this way as there are different parts of the chest (therefore small differences which arent 0 units)
+                            Vector3 actualChestCoordinate = islandCoordinate + chestCoordinates[i];
+                            float chestDistance = Vector3.Distance(actualChestCoordinate, hit.transform.position);
+                            if (chestDistance < shortestDistance) {
+                                shortestDistance = chestDistance;
+                                index = i;
+                            }
+                        }
+                        Debug.Log("SHORTEST: " + shortestDistance);
+                        int goldToSubtract = (int) (0.1f * maxChestGold[index]);
+                        if (chestGold[index] > goldToSubtract) {
+                            PlayerManager.goldLooted += goldToSubtract;
+                            chestGold[index] -= goldToSubtract; // Take off 10% of max
+                        } else if (chestGold[index] > 0) {
+                            PlayerManager.goldLooted += chestGold[index];
+                            chestGold[index] = 0;
+                        }
+                        IslandManager.islandInformation[islandCoordinate]["chestgold"] = chestGold;
+                        Debug.Log("CHEST GOLD: " + chestGold[index]);
+                    }
                 }
                 if (hitTag == "Pirate Ship" && activeScene == "Game") {
                     // Hit the pirate ship
@@ -91,8 +130,8 @@ public class RaycastManager : MonoBehaviour {
                         float thirdDistance = Vector2.Distance(normalisedPlayerPos, normalisedHitPos + thirdAddon);
                         if (firstDistance < 5 || secondDistance < 5 || thirdDistance < 5) {
                             Debug.Log("Can enter priate ship");
-                            SceneManager.LoadScene("Pirate Ship");
                             PirateSceneManager.currentPirateShipCoordinates = hit.transform.position;
+                            SceneManager.LoadScene("Pirate Ship");
                         }
                     }
                 }

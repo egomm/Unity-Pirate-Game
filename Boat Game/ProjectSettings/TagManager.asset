@@ -10,6 +10,8 @@ TagManager:
   - Pirate
   - 'Health '
   - Pirate Ship
+  - Chest
+  - Ocean
   layers:
   - Default
   - TransparentFX

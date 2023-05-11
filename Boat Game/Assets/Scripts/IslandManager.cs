@@ -245,6 +245,8 @@ public class IslandManager : MonoBehaviour {
             // Chests
             List<Vector3> chestCoordinates = new List<Vector3>();
             List<Vector3> chestAngles = new List<Vector3>();
+            List<int> chestGold = new List<int>();
+            List<int> maxChestGold = new List<int>();
             if (spawnChests) {
                 int chestCount = (int) Mathf.Round(Random.Range(radius / 10, radius / 5));
                 for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, allow chests to overlap plants 
@@ -283,8 +285,11 @@ public class IslandManager : MonoBehaviour {
                     }
                     if (canPlaceChest) {
                         float randomChestAngle = Random.Range(0f, 360f);
+                        int chestsGold = (int) (magnitude * Random.Range(0.5f, 1f)) + 200; // Between 200 - 1200 gold per chest (can adjust)
                         chestAngles.Add(new Vector3(0, randomChestAngle, 0));
                         chestCoordinates.Add(new Vector3(chestX, chestY, chestZ));
+                        chestGold.Add(chestsGold);
+                        maxChestGold.Add(chestsGold);
                     }
                 }
             }
@@ -373,6 +378,8 @@ public class IslandManager : MonoBehaviour {
             informationDictionary.Add("plantangles", plantAngles);
             informationDictionary.Add("chestcoordinates", chestCoordinates);
             informationDictionary.Add("chestangles", chestAngles);
+            informationDictionary.Add("chestgold", chestGold);
+            informationDictionary.Add("maxchestgold", maxChestGold);
             informationDictionary.Add("piratecoordinates", pirateCoordinates);
             informationDictionary.Add("pirateangles", pirateAngles);
             informationDictionary.Add("piratestospawn", piratesToSpawn);

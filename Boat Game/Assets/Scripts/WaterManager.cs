@@ -19,11 +19,13 @@ public class WaterManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         Vector3[] vertices = meshFilter.mesh.vertices;
         for (int i = 0; i < vertices.Length; i++) {
-            vertices[i].y = WaveManager.instance.GetWaveHeight(transform.position.z + vertices[i].z);
+            if (WaveManager.instance != null) {
+                vertices[i].y = WaveManager.instance.GetWaveHeight(transform.position.z + vertices[i].z);
+            }
         }
 
         meshFilter.mesh.vertices = vertices;

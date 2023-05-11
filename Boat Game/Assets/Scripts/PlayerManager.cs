@@ -13,6 +13,9 @@ public class PlayerManager : MonoBehaviour {
     private float lastDrowingTime = 0;
     private bool inWater = false;
 
+    public static int goldLooted = 0;
+    public static int piratesKilled = 0;
+
     // Start is called before the first frame update
     void Start() {
         Debug.Log("Started");
@@ -39,10 +42,10 @@ public class PlayerManager : MonoBehaviour {
         }
         
         // Make it so that the player can't regenerate health if they are in the ocean -> make sure that the player drowns instead
-        if (activeSceneName == "Island Scene" || activeSceneName == "Starting Scene") {
+        if (activeSceneName == "Island Scene" || activeSceneName == "Starting Scene" || activeSceneName == "Pirate Ship") {
             if (playerCoordinates.y < 0 && inWater) { // Player is underwater 
                 lastRegenerationTime = Time.time; // Can't regenerate
-                if ((Time.time - lastDrowingTime) > 2f) { // Decrease the player health by for every two seconds the player is in water
+                if ((Time.time - lastDrowingTime) > 0.5f) { // Decrease the player health by for every 0.5 seconds the player is in water
                     playerHealth--;
                     lastDrowingTime = Time.time;
                 }
@@ -55,7 +58,7 @@ public class PlayerManager : MonoBehaviour {
             }
         }
 
-        if ((Time.time-lastRegenerationTime) > 5f) { 
+        if ((Time.time-lastRegenerationTime) > 2f) { 
             if (playerHealth < 99) { 
                 playerHealth++;
             } else {
@@ -64,15 +67,11 @@ public class PlayerManager : MonoBehaviour {
             lastRegenerationTime = Time.time;
         }
 
-        if (transform.position.y > 4 && SceneManager.GetActiveScene().name == "Game") { // Prevent the player from flying, sometimes the player was able to glitch up box colliders
+        if (transform.position.y > 4 && activeSceneName == "Game") { // Prevent the player from flying, sometimes the player was able to glitch up box colliders
             transform.position = new Vector3(transform.position.x, WaveManager.instance.GetWaveHeight(transform.position.z), transform.position.z);
         }
 
-        if (SceneManager.GetActiveScene().name == "Island Scene") { 
-            Vector3 centre = IslandManager.currentCentre;
-            float radius = (float) IslandManager.islandInformation[centre]["radius"];
-            Vector2 centreTwoDimensional = new Vector2(centre.x, centre.z);
-            float multiplier = 0.95f * radius;
+        if (activeSceneName == "Island Scene" || activeSceneName == "Pirate Ship") { 
             GameObject[] pirates = GameObject.FindGameObjectsWithTag("Pirate");
             for (int i = 0; i < pirates.Length; i++) { // This will not change until the scene unloads
                 if (lastAttackTimes.Count < i + 1) { 
@@ -99,16 +98,32 @@ public class PlayerManager : MonoBehaviour {
                     }
                 }
                 GameObject pirate = pirates[i];
-                if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
-                    pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
-                    if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
-                        // Can attack the player if the player is visible 
-                        pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
-                        if ((Time.time - lastAttackTimes[i]) >= 1f) { // can only attack once a second
-                            lastAttackTimes[i] = Time.time; 
-                            // Attack the player 
-                            float pirateDamage = 1f + (0.1f * pirateTypes[i]); // between 0.5 and 1 for the damage
-                            playerHealth -= pirateDamage;
+                if (activeSceneName == "Island Scene") {
+                    if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
+                        pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
+                        if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
+                            // Can attack the player if the player is visible 
+                            pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
+                            if ((Time.time - lastAttackTimes[i]) >= 1f) { // can only attack once a second
+                                lastAttackTimes[i] = Time.time; 
+                                // Attack the player 
+                                float pirateDamage = 3f + (0.6f * pirateTypes[i]); // between 3 and 6 for the damage
+                                playerHealth -= pirateDamage;
+                            }
+                        }
+                    }
+                } else if (activeSceneName == "Pirate Ship") {
+                    if (Vector3.Distance(pirate.transform.position, transform.position) < 20f && transform.position.y > 0) {
+                        pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
+                        if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
+                            // Can attack the player if the player is visible 
+                            pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
+                            if ((Time.time - lastAttackTimes[i]) >= 1f) { // can only attack once a second
+                                lastAttackTimes[i] = Time.time; 
+                                // Attack the player 
+                                float pirateDamage = 3f + (0.6f * pirateTypes[i]); // between 3 and 6 for the damage
+                                playerHealth -= pirateDamage;
+                            }
                         }
                     }
                 }

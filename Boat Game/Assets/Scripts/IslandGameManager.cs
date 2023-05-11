@@ -5,7 +5,8 @@ using UnityEngine;
 public class IslandGameManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
-        int islandCount = 150-IslandManager.islandInformation.Count; 
+        Debug.Log("Island Game Manager");
+        int islandCount = 200-IslandManager.islandInformation.Count; 
         Debug.Log(IslandManager.instance);
         for (int i = 0; i < islandCount; i++) {
             float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
@@ -17,7 +18,7 @@ public class IslandGameManager : MonoBehaviour {
         }
         Debug.Log(IslandManager.islandInformation.Count);
         // Now initalise 500 pirate ships 
-        int pirateShipCount = 500 - PirateShipManager.pirateShipCoordinates.Count;
+        int pirateShipCount = 1000 - PirateShipManager.pirateShipCoordinates.Count;
         for (int i = 0; i < pirateShipCount; i++) {
             float angle = Random.Range(0, 2 * Mathf.PI); // Angle is based on (0, 0) positive x direction
             float magnitude = Mathf.Sqrt(Random.Range(0f, Mathf.PI*Mathf.Pow(1000, 2))/Mathf.PI); // Distance from 0, 0
@@ -70,6 +71,22 @@ public class IslandGameManager : MonoBehaviour {
                 }
                 boat.transform.position = new Vector3(newCoordinate.x, 0, newCoordinate.z);
             } 
+        }
+        GameObject[] islandPrefabs = GameObject.FindGameObjectsWithTag("Island");
+        if (islandPrefabs.Length > 0) { // Set waves to 0
+            if (!InitalisePrefab.instance.runningDecreasing) {
+                InitalisePrefab.instance.runningIncreasing = false;
+                InitalisePrefab.instance.runningDecreasing = true;
+                InitalisePrefab.instance.waveHeightTarget = 0; // target
+                InitalisePrefab.instance.ManagePrefabs();
+            }
+        } else { // Manage the speed?
+            if (!InitalisePrefab.instance.runningIncreasing) {
+                InitalisePrefab.instance.runningDecreasing = false;
+                InitalisePrefab.instance.runningIncreasing = true;
+                InitalisePrefab.instance.waveHeightTarget = 0.5f; // target 
+                InitalisePrefab.instance.ManagePrefabs();
+            }
         }
     }
 }

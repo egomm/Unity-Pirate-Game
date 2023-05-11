@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 1253786579061247138}
   - component: {fileID: 1253786579061247141}
   - component: {fileID: 1253786579061247140}
-  - component: {fileID: 1253786579061247136}
-  - component: {fileID: 1253786579061247137}
+  - component: {fileID: 7167521}
+  - component: {fileID: -2755440270580041520}
   m_Layer: 0
   m_Name: Ocean
-  m_TagString: Untagged
+  m_TagString: Ocean
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,7 +100,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1253786579061247136
+--- !u!114 &7167521
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,10 +113,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amplitude: 0
-  length: 4
+  length: 2
   speed: 0
   offset: 0
---- !u!114 &1253786579061247137
+--- !u!114 &-2755440270580041520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

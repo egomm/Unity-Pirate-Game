@@ -8,6 +8,15 @@ public class InitalisePrefab : MonoBehaviour {
 	public List<xzCoordinates> centres = new List<xzCoordinates>();
 	public Dictionary<xzCoordinates, GameObject[]> prefabs = new Dictionary<xzCoordinates, GameObject[]>();
 	public Dictionary<xzCoordinates, GameObject[]> seaFloorPrefabs = new Dictionary<xzCoordinates, GameObject[]>();
+	public float waveHeightTarget = 0;
+	public static InitalisePrefab instance;
+	public bool runningDecreasing = false;
+	public bool runningIncreasing = false;
+
+	void Awake() {
+		instance = this;
+	}
+
 	// Start is called before the first frame update
 	void Start() {
 		ocean.GetComponent<WaveManager>().amplitude = 0; // Initalise the prefab information
@@ -22,20 +31,55 @@ public class InitalisePrefab : MonoBehaviour {
 		Invoke("destoryFarCentres", 0.375f); // add 125ms later to reduce lag
 	}
 	
-	void ManagePrefabs() { // In this case, the ampltidue of the waves are decreasing from 1 to 0
-		GameObject component = GameObject.Find("Ocean(Clone)"); // Find the ocean prefabs
-		if (component.GetComponent<WaveManager>().amplitude > 0) { 
-			component.GetComponent<WaveManager>().amplitude -= 0.05f;
-			ocean.GetComponent<WaveManager>().amplitude -= 0.05f;
-			if (component.GetComponent<WaveManager>().amplitude > 0) { 
-				Invoke("ManagePrefabs", 1);
+	// CLEAN THIS UP
+	public void ManagePrefabs() { // In this case, the ampltidue of the waves are decreasing from 1 to 0
+		GameObject[] components = GameObject.FindGameObjectsWithTag("Ocean"); // Find ALL the ocean prefabs (using tags)
+		if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget && runningDecreasing) { // Decreasing
+			Debug.Log("DECREASING!!!");
+			if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) { 
+				foreach (GameObject component in components) {
+					component.GetComponent<WaveManager>().amplitude -= 0.05f;
+				}
+				ocean.GetComponent<WaveManager>().amplitude -= 0.05f;
+				if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) { 
+					Invoke("ManagePrefabs", 1);
+				} else {
+					foreach (GameObject component in components) {
+						component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+					}
+					ocean.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+					runningDecreasing = false;
+				}
 			} else {
-				component.GetComponent<WaveManager>().amplitude = 0;
-				ocean.GetComponent<WaveManager>().amplitude = 0;
+				foreach (GameObject component in components) {
+					component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+				}
+				ocean.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+				runningDecreasing = false;
 			}
-		} else {
-			component.GetComponent<WaveManager>().amplitude = 0;
-			ocean.GetComponent<WaveManager>().amplitude = 0;
+		} else if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget && runningIncreasing) { // Increasing
+			Debug.Log("INCREASING!");
+			if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget) { 
+				foreach (GameObject component in components) {
+					component.GetComponent<WaveManager>().amplitude += 0.05f;
+				}
+				ocean.GetComponent<WaveManager>().amplitude += 0.05f;
+				if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget) { 
+					Invoke("ManagePrefabs", 1);
+				} else {
+					foreach (GameObject component in components) {
+						component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+					}
+					ocean.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+					runningIncreasing = false;
+				}
+			} else {
+				foreach (GameObject component in components) {
+					component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+				}
+				ocean.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+				runningIncreasing = false;
+			}
 		}
 	}
 
