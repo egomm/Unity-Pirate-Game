@@ -20,7 +20,11 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // Manage all the important statistics   
-        healthText.text = "Health: " + (int) Mathf.Round((float) PlayerManager.playerHealth); // round this
+        if ((float) PlayerManager.playerHealth > 0) { // Never display the health as being in negatives
+            healthText.text = "Health: " + (int) Mathf.Round((float) PlayerManager.playerHealth); // round this
+        } else {
+            healthText.text = "Health: 0";
+        }
         Vector3 playerCoordinates = PlayerManager.playerCoordinates;
         coordinateText.text = "x: " + (int) Mathf.Round(playerCoordinates.x) + ", y: " + (int) Mathf.Round(playerCoordinates.y) + ", z: " + (int) Mathf.Round(playerCoordinates.z);  
         fpsTracker[lastFrame] = Time.deltaTime;

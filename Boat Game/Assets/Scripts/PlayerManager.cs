@@ -130,7 +130,7 @@ public class PlayerManager : MonoBehaviour {
             }
         }
         if (playerHealth <= 0) { // If the player health is less than 0, player is dead
-            Debug.Log("PLAYER DEAD");
+            SceneManager.LoadScene("Death Scene");
         }
     }
 }

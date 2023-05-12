@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Pirate Ship.unity
     guid: 629ab2f35a840244aa69a1f50d92a927
+  - enabled: 1
+    path: Assets/Scenes/Death Scene.unity
+    guid: 717d52963d753cc41b7b66d9cbff3c3d
   m_configObjects: {}
