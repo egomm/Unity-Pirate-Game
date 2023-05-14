@@ -12,7 +12,8 @@ public class GameManager : MonoBehaviour {
     public TextMeshProUGUI killText;
     private int lastFrame = 0;
     private float[] fpsTracker;
-    // Start is called before the first frame update
+
+    // Start is called when the script is loaded
     void Start() {
         fpsTracker = new float[50];
     }
@@ -35,6 +36,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private float CalculateFps() {
+        // Method for calculating the player's fps by getting the fps over a period of time
         float totalTime = 0;
         foreach (float time in fpsTracker) {
             totalTime += time;
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public static string AbbreviatedForms(int number) {
+        // Abbreviate a number (for example 1000 -> 1k, 10000 -> 10k)
         int exponent = (int) Mathf.Floor(Mathf.Log10(number));
         switch (exponent) {
             case 3: case 4: case 5: // 1k, 10k, 100k
@@ -55,10 +58,11 @@ public class GameManager : MonoBehaviour {
         return number.ToString();
     }
 
-    public static float RoundToSignificantDigits(double input, int digits) { // Converts to a certain amount of significant figures
+    public static float RoundToSignificantDigits(double input, int digits) { // Converts an int to a certain amount of significant figures
         if (input.ToString().Length < digits + 1) {
             return (float) input;
         }
+        // Split the string at a certain amount of characters (at digits + 1)
         return float.Parse(input.ToString().Substring(0, digits + 1), CultureInfo.InvariantCulture.NumberFormat);
     }
 }

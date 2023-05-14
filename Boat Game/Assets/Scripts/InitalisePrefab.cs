@@ -31,40 +31,40 @@ public class InitalisePrefab : MonoBehaviour {
 		Invoke("destoryFarCentres", 0.375f); // add 125ms later to reduce lag
 	}
 	
-	// CLEAN THIS UP
-	public void ManagePrefabs() { // In this case, the ampltidue of the waves are decreasing from 1 to 0
-		GameObject[] components = GameObject.FindGameObjectsWithTag("Ocean"); // Find ALL the ocean prefabs (using tags)
-		if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget && runningDecreasing) { // Decreasing
+	public void ManagePrefabs() { // Manage the amplitude and the speed of the waves
+		GameObject[] components = GameObject.FindGameObjectsWithTag("Ocean"); // Find all of the ocean prefabs
+		if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget && runningDecreasing) { // Decreasing the amplitude
 			if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) { 
 				foreach (GameObject component in components) {
-					component.GetComponent<WaveManager>().amplitude -= 0.05f;
+					component.GetComponent<WaveManager>().amplitude -= 0.05f; // Decrease the amplitude by 0.05
 				}
-				ocean.GetComponent<WaveManager>().amplitude -= 0.05f;
-				if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) { 
+				ocean.GetComponent<WaveManager>().amplitude -= 0.05f; // Decrease the amplitude by 0.05
+				if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) {  
 					Invoke("ManagePrefabs", 0.5f); 
-				} else {
+				} else { // Complete if the amplitude is less than or equal to the target
 					foreach (GameObject component in components) {
 						component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
 					}
 					ocean.GetComponent<WaveManager>().amplitude = waveHeightTarget;
 					runningDecreasing = false;
 				}
-			} else {
+			} else { // Complete if the amplitude is less than or equal to the target
+				// Set the amplitude to the target 
 				foreach (GameObject component in components) {
-					component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
+					component.GetComponent<WaveManager>().amplitude = waveHeightTarget; 
 				}
 				ocean.GetComponent<WaveManager>().amplitude = waveHeightTarget;
 				runningDecreasing = false;
 			}
-		} else if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget && runningIncreasing) { // Increasing
+		} else if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget && runningIncreasing) { // Increasing the amplitude
 			if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget) { 
 				foreach (GameObject component in components) {
-					component.GetComponent<WaveManager>().amplitude += 0.05f;
+					component.GetComponent<WaveManager>().amplitude += 0.05f; // Increase the amplitude by 0.05
 				}
-				ocean.GetComponent<WaveManager>().amplitude += 0.05f;
+				ocean.GetComponent<WaveManager>().amplitude += 0.05f; // Increase the amplitude by 0.05
 				if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget) { 
 					Invoke("ManagePrefabs", 0.5f);
-				} else {
+				} else { // Complete if the amplitude is greater than the target
 					foreach (GameObject component in components) {
 						component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
 					}
@@ -72,6 +72,7 @@ public class InitalisePrefab : MonoBehaviour {
 					runningIncreasing = false;
 				}
 			} else {
+				// Set the amplitude to the target 
 				foreach (GameObject component in components) {
 					component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
 				}
@@ -79,7 +80,7 @@ public class InitalisePrefab : MonoBehaviour {
 				runningIncreasing = false;
 			}
 		}
-		// Make the wave speed propertional to the wave height
+		// Make the wave speed propertional to twice the wave height
 		foreach (GameObject component in components) {
 			component.GetComponent<WaveManager>().speed = 2*ocean.GetComponent<WaveManager>().amplitude;
 		}
@@ -92,25 +93,27 @@ public class InitalisePrefab : MonoBehaviour {
 		ocean.GetComponent<WaveManager>().offset = waveOffset; // Set the wave offset of the prefab to the wave offset of the active prefabs
 	}
 
-	// Method for spawning a 2x2 prefab square (4 prefabs)
+	// Method for spawning a 2x2 prefab square (4 prefabs) of ocean and sea floor 
 	void spawnBigSquare(int centreX, int centreZ) {
 		GameObject[] components = new GameObject[4];
 		GameObject[] seafloorcomponents = new GameObject[4];
-		int i = 0;
+		int i = 0; // Manage the current index
+		// Increment by 2 each time
 		for (int x = -1; x <= 1; x+=2) {
 			for (int z = -1; z <= 1; z+=2) {
 				GameObject component = Instantiate(ocean, new Vector3(centreX+5*x, 0, centreZ+5*z), Quaternion.identity);
-				components[i] = component; // Add to an array of all of the prefabs in this square
+				components[i] = component;
 				GameObject seafloorcomponent = Instantiate(seafloor, new Vector3(centreX+5*x, -3, centreZ+5*z), Quaternion.identity);
 				seafloorcomponents[i] = seafloorcomponent;
 				i++;
 			}
 		}
-		prefabs.Add(new xzCoordinates(centreX, centreZ), components); // Add information about the big square to the dictionary
+		// Add information about the big square to the dictionary which manages the prefabs 
+		prefabs.Add(new xzCoordinates(centreX, centreZ), components); 
 		seaFloorPrefabs.Add(new xzCoordinates(centreX, centreZ), seafloorcomponents);
 	}
 
-	// Method for destroying squares more than x units away from the boat
+	// Method for checking if there are any ocean prefabs/sea floor prefabs which need to be destroyed
 	void destoryFarCentres() {
 		GameObject boat = GameObject.Find("Boat"); 
 		Vector2 boatXZ = new Vector2(boat.transform.position.x, boat.transform.position.z);
@@ -119,6 +122,7 @@ public class InitalisePrefab : MonoBehaviour {
 		Invoke("destoryFarCentres", 0.25f); // Recur the method
 	}
 
+	// Method for destroying centres (ocean prefabs)
 	void destroyCentres(Vector2 boatCoordinates, Dictionary<xzCoordinates, GameObject[]> prefabsToDestory) {
 		List<xzCoordinates> toRemove = new List<xzCoordinates>();
 		foreach (var item in prefabsToDestory) { // Iterate over the prefabs
@@ -142,6 +146,7 @@ public class InitalisePrefab : MonoBehaviour {
 		}
 	}
 
+	// Method for checking if the game needs to create squares if the player is within x units of where the square would be called
 	void checkNearestCentres() {
 		GameObject boat = GameObject.Find("Boat");
 		float boatX = boat.transform.position.x;
@@ -176,7 +181,7 @@ public class InitalisePrefab : MonoBehaviour {
 	}
 }
 
-// Class for xz coordinates with constructor
+// Class for xz coordinates with constructor (opposed to using a Vector2 as that uses x, y and not x, z)
 public class xzCoordinates {
 	public xzCoordinates(int thisX, int thisZ) {
 		x = thisX;

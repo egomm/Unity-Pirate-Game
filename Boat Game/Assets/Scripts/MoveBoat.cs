@@ -85,18 +85,20 @@ public class MoveBoat : MonoBehaviour
                 finished = true;
             }
         }
-        speed = Mathf.RoundToInt(playerRb.velocity.magnitude*3.6f); // boat speed
-        if (playerRb.velocity.y > 2*waveAmplitude) { // limit the boat's y velocity (will help prevent the boat sinking too much)
+        speed = Mathf.RoundToInt(playerRb.velocity.magnitude*3.6f); // The boat speed in kmph (as velocity.magnitude is in m/s)
+        if (playerRb.velocity.y > 2*waveAmplitude) { // limit the boat's y velocity (helps preventing the boat sinking too much)
             playerRb.velocity = new Vector3(playerRb.velocity.x, 2*waveAmplitude, playerRb.velocity.z);
         }
         velocity = Mathf.Sqrt(Mathf.Pow(playerRb.velocity.x, 2) + Mathf.Pow(playerRb.velocity.z, 2)); // new xz velocity
         // Ensure that the player isn't going over the max speed (determined by the boat, the waves, and the direction the boat is travelling)
-        if (velocity+2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)) > maxSpeed) {
+        if (velocity+2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)) > maxSpeed) { 
+            // Set the velocity of the boat
             playerRb.velocity = playerRb.velocity.normalized * (maxSpeed-2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)));
             speed = Mathf.RoundToInt((maxSpeed-2*waveSpeed*Mathf.Cos(ConvertToRadians(playerRb.rotation.eulerAngles.y)))*3.6f);
         }
     }
 
+    // Method for converting degrees to radians
     private float ConvertToRadians(float degrees) {
         return degrees*Mathf.PI/180;
     }

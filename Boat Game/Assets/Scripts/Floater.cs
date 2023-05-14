@@ -21,7 +21,7 @@ public class Floater : MonoBehaviour
         float waveCos = ConvertToDegrees(WaveManager.instance.GetCos(transform.position.z));
         float multiplier = 0;
         if (waveLength > 0) {
-            multiplier = Mathf.Atan(2*waveAmplitude/waveLength);
+            multiplier = Mathf.Atan(2*waveAmplitude/waveLength); // An approximation for the multiplier
         }
         // Mathf.PI/180 converts degrees to radians, gets the xAngle and zAngle based on the angle of the wave at the boats position
         float xAngle = -(Mathf.Cos(ConvertToRadians(transform.rotation.eulerAngles.y)))*multiplier*waveCos; 

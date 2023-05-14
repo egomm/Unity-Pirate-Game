@@ -24,7 +24,7 @@ public class MovePlayer : MonoBehaviour {
         playerAnim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
+    // Update is called once per frame (FixedUpdate is called at fixed intervals)
     void FixedUpdate() {
         Vector3 centre = IslandManager.currentCentre;
         float zVelocity = Input.GetAxis("Vertical") > 0 ? Input.GetAxis("Vertical") : 0; // Get the z velocity 
@@ -62,7 +62,7 @@ public class MovePlayer : MonoBehaviour {
                     angle = Mathf.Atan((playerRb.position.z - centre.z) / (playerRb.position.x - centre.x));
                     multiplier *= (playerRb.position.x - centre.x) / Mathf.Abs(playerRb.position.x - centre.x);
                 }
-                // Get the new player positions based on trig
+                // Get the new player positions based on trigonometry
                 float newPlayerX = multiplier * Mathf.Cos(angle);
                 float newPlayerZ = multiplier * Mathf.Sin(angle);
                 playerRb.position = new Vector3(newPlayerX + centre.x, playerRb.position.y, newPlayerZ + centre.z);

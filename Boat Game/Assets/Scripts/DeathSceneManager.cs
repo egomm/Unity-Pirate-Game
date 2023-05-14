@@ -14,6 +14,7 @@ public class DeathSceneManager : MonoBehaviour {
         // Set text from data from game manager/player manager
         Button play = mainMenuButton.GetComponent<Button>();
         play.onClick.AddListener(LoadMainMenu);
+        // Show the statistics to the player
         goldText.text = "Gold Looted: " + GameManager.AbbreviatedForms(PlayerManager.goldLooted);
         killText.text = "Pirates Killed: " + GameManager.AbbreviatedForms(PlayerManager.piratesKilled);
     }

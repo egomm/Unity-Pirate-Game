@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+#if UNITY_EDITOR // If the game is being run in the unity editor
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
@@ -8,7 +8,8 @@ public static class DefaultSceneLoader {
         EditorApplication.playModeStateChanged += LoadDefaultScene;
     }
 
-    static void LoadDefaultScene(PlayModeStateChange state){
+    // Method for loading the default scene (the Main Menu scene which is at index 0)
+    static void LoadDefaultScene(PlayModeStateChange state) {
         if (state == PlayModeStateChange.ExitingEditMode) {
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
         }

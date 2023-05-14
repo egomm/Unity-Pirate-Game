@@ -9,7 +9,7 @@ public class MainMenuController : MonoBehaviour {
     public Button informationButton;
     // Start is called before the first frame update
     void Start() {
-        // Return to default values
+        // Return to the default values (player may be replaying the game)
         PlayerManager.playerHealth = 100;
         PlayerManager.goldLooted = 0;
         PlayerManager.piratesKilled = 0;
@@ -25,11 +25,6 @@ public class MainMenuController : MonoBehaviour {
         play.onClick.AddListener(LoadStartScene);
         Button information = informationButton.GetComponent<Button>();
         information.onClick.AddListener(LoadInformationScene);
-    }
-
-    // Update is called once per frame
-    void Update() {
-        
     }
 
     public void LoadStartScene() {

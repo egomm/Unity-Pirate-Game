@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour {
     private Vector3 offset;
     // Start is called before the first frame update
     void Start() {
+        // Get the offset between the camera and the player
         offset = IslandManager.startingCoordinates + transform.position - player.transform.position;
     }
 

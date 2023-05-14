@@ -7,7 +7,7 @@ public class IslandManager : MonoBehaviour {
     public static IslandManager instance;
     public static List<Vector3> islandCoordinates = new List<Vector3>();
     public static Dictionary<Vector3, Dictionary<string, object>> islandInformation = new Dictionary<Vector3, Dictionary<string, object>>();
-    public List<Vector3> activeIslands = new List<Vector3>(); // There shouldn't be any active when scenes change!!!
+    public List<Vector3> activeIslands = new List<Vector3>(); // There shouldn't be any active when scenes change
     public Dictionary<Vector3, List<GameObject>> activeIslandInformation = new Dictionary<Vector3, List<GameObject>>();
     // Information for regular island
     public GameObject island;
@@ -38,7 +38,7 @@ public class IslandManager : MonoBehaviour {
 
 
     private void Awake() { // Called before start 
-        instance = this;
+        instance = this; // Set the instance to IslandManager so that non-static methods can be accessed from other scripts
     }
 
     // Start is called before the first frame update
@@ -80,27 +80,6 @@ public class IslandManager : MonoBehaviour {
             float dockScaleY = 0.8f + (Random.Range(0.8f, 1f) * height/20f); // Maximum will be 1 (Min must be 0.8) - Depend on randomisation + height of island
             float dockScaleZ = Random.Range(0.8f, 1f) * radius/22.5f; // Maximum will be 0.88 - Depend on randomisation + the radius - ensure the width is smaller than the length
             Vector3 dockScale = new Vector3(dockScaleX, dockScaleY, dockScaleZ);
-            /* Consider case where dock scale generated is (0.6, 0.8, 0.4) with angle = pi/2 and radius = 10 and height = 1 (island spawns at (x, 1, z))
-            x = rcos(x), y = rsin(x) -> x = 0, y = 10 -> should be (0, 12.25) with x scale = 0.6
-            if x scale was hypothetically = 1 -> should be (0, 13.9)
-            if x scale was hypothetically 0.2 -> should be (0, 10.6)
-            Based on this x = 10+(xScale*4.125)
-            As the dock is on an angle of pi/2, minus pi/2 
-            Although if this is on an angle, lets say 3pi/4 -> x = (10+)*sqrt(2)/2 same as z
-            If angle = 2pi/3 -> x = (10+(xScale*4.125))*sin(pi/6), z = (10+(xScale*4.125))*cos(pi/6)
-            */
-            /* CHANGE THIS SYSTEM SO IT BASES OFF ISLAND SCALE
-            At 2: use 8 - 1.4 diff
-            At 3: use 11 - 2.4 diff
-            At 4: use 12 - 2.7 diff
-            This will approach 13 (expected) as it get steeper
-            seems to be a 2/3 split??
-            0.3 at a y dock scale of 1
-
-            For 2d -> x = radius*sqrt(1-((0.75+(0.3*dockScaleY))/(height/2))^2))
-            */
-            //float dockX = (10+(dockScaleX*4.125f))*Mathf.Sin(angle-(Mathf.PI/2));
-            //float dockZ = (10+(dockScaleX*4.125f))*Mathf.Cos(angle-(Mathf.PI/2));
             float adjustedDockHeight = 0.75f + (0.3f*dockScaleY) - 0.06f; // this MUST be less than 1
             float dockMagnitude = radius*Mathf.Sqrt(1-Mathf.Pow(2*adjustedDockHeight/height, 2f)); // Formula is derived from equation of ellipise -> (x/a)^2 + (y/b)^2 = 1 where y = adjustedDockHeight
             float dockConstant = 13*dockScaleX/3;
@@ -127,12 +106,11 @@ public class IslandManager : MonoBehaviour {
                 Vector3 palmTreeCoordinate = new Vector3(palmTreeX, palmTreeY, palmTreeZ);
                 float palmTreeXAngle = palmTreeConstantAngle*180/Mathf.PI;
                 float palmTreeYAngle = palmTreeAngle*180/Mathf.PI;
-                // Add to list
-                // FIRSTLY CHECK IF THERE ARE ANY OTHER PALM TREES NEARBY
+                // Add to information to list
                 bool canPlacePalmTree = true;
                 for (int k = 0; k < palmTreeCoordinates.Count; k++) {
                     float oldAngle = palmTreeAngles[k].x*Mathf.PI/180;
-                    float maximum = 5;
+                    float maximum;
                     if (Vector3.Distance(islandCoordinate, palmTreeCoordinate) > Vector3.Distance(islandCoordinate, palmTreeCoordinates[k])) { // New palm tree is further out
                         maximum = 5+3*(Mathf.Sin(oldAngle)-Mathf.Sin(palmTreeConstantAngle)); // 6+4(sin(old)-sin(new)) 
                     } else { // New palm tree is closer
@@ -146,7 +124,7 @@ public class IslandManager : MonoBehaviour {
                 }
                 if (canPlacePalmTree) {
                     // Chance of coconuts around the base of the palm tree
-                    int coconutCount = Random.Range(0, 4); // Spawn between 0 and 3 coconuts (this function is inclusive)
+                    int coconutCount = Random.Range(0, 4); // Spawn between 0 and 3 coconuts (the Random.Range function is inclusive)
                     List<Vector3> coconutCoordinates = new List<Vector3>();
                     List<Vector3> coconutAngles = new List<Vector3>();
                     for (int k = 0; k < coconutCount; k++) {
@@ -156,13 +134,13 @@ public class IslandManager : MonoBehaviour {
                         float coconutMagnitude = Random.Range(0.5f, 1f);
                         float coconutX = coconutMagnitude*Mathf.Cos(coconutAngle);
                         float coconutZ = coconutMagnitude*Mathf.Sin(coconutAngle);
-                        Vector3 coconutPosition = palmTreeCoordinate + new Vector3(coconutX, 0, coconutZ); // make the y depend on from the centre
+                        Vector3 coconutPosition = palmTreeCoordinate + new Vector3(coconutX, 0, coconutZ); 
                         if (Vector2.Distance(new Vector2(coconutPosition.x, coconutPosition.z), new Vector2(0, 0)) < 0.95f*radius) {
                             float randomCoconutAngle = Random.Range(0f, 360f);
                             coconutAngles.Add(new Vector3(0, randomCoconutAngle, 0));
                             coconutCoordinates.Add(coconutPosition);
                         } else {
-                            k--;
+                            k--; // go back by one index if the coconut failed to create
                         }
                     }
                     if (coconutCoordinates.Count > 0) {
@@ -248,7 +226,7 @@ public class IslandManager : MonoBehaviour {
             List<int> maxChestGold = new List<int>();
             if (spawnChests) {
                 int chestCount = (int) Mathf.Round(Random.Range(radius / 10, radius / 5));
-                for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, allow chests to overlap plants 
+                for (int j = 0; j < chestCount; j++) { // Don't allow overlapping chests, although allow chests to overlap plants 
                     float chestAngle = Random.Range(0, 2 * Mathf.PI);
                     float chestAngleMangitude = Random.Range(0, (radius / 2)); // must be somewhat close to the centre
                     float chestX = chestAngleMangitude * Mathf.Cos(chestAngle);
@@ -306,7 +284,7 @@ public class IslandManager : MonoBehaviour {
                             float randomAngle = Random.Range(0, 2 * Mathf.PI); // Determine the angle from the chest at which to spawn the pirate
                             float addPirateSpawnX = pirateSpawnRadius * Mathf.Cos(randomAngle);
                             float addPirateSpawnZ = pirateSpawnRadius * Mathf.Sin(randomAngle);
-                            Vector3 addPirateSpawn = new Vector3(addPirateSpawnX, 0.75f, addPirateSpawnZ); // Add on 0.75 units upwards to account for gradient etc (customise this later?)
+                            Vector3 addPirateSpawn = new Vector3(addPirateSpawnX, 0.75f, addPirateSpawnZ); // Add on 0.75 units upwards to account for the gradient
                             Vector3 pirateSpawnCoordinate = chestCoordinate + addPirateSpawn;
                             Vector2 twoDimensionalPirateSpawnCoordinate = new Vector2(pirateSpawnCoordinate.x, pirateSpawnCoordinate.z);
                             bool canSpawnPirate = true;
@@ -356,8 +334,6 @@ public class IslandManager : MonoBehaviour {
                             }
                         }
                     }
-                } else { // Spawn the pirates wherever possible
-                    int pirateCount = (int) Mathf.Round(Random.Range(radius / 10, radius / 5)); // Same spawn rate as what chests would have been
                 }
             }
             informationDictionary.Add("radius", radius);
@@ -388,6 +364,7 @@ public class IslandManager : MonoBehaviour {
     }
 
     public void CreateIsland(Vector3 coordinate) {
+        // Method for creating the island - takes the coordinate of the island as the parameter
         currentCoordinate = coordinate;
         activeIslands.Add(coordinate);
         List<GameObject> componentsList = new List<GameObject>();
@@ -411,7 +388,7 @@ public class IslandManager : MonoBehaviour {
             Vector3 palmTreeCoordinate = palmTreeCoordinates[i];
             Vector2 palmTreeAngle = palmTreeAngles[i];
             GameObject spawnedPalmTree = Instantiate(palmTree, coordinate + palmTreeCoordinate, Quaternion.Euler(palmTreeAngle.x, palmTreeAngle.y, 0));
-            componentsList.Add(spawnedPalmTree);
+            componentsList.Add(spawnedPalmTree); // Add the component to the components list
         }
         List<List<Vector3>> coconutCoordinates = (List<List<Vector3>>) islandInformation[coordinate]["coconutcoordinates"];
         List<List<Vector3>> coconutAngles = (List<List<Vector3>>) islandInformation[coordinate]["coconutangles"];
@@ -515,10 +492,5 @@ public class IslandManager : MonoBehaviour {
         }
         activeIslands.Remove(coordinate);
         activeIslandInformation.Remove(coordinate);
-    }
-
-    // Update is called once per frame
-    void Update() {
-
     }
 }
