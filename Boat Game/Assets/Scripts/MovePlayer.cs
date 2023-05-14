@@ -36,7 +36,6 @@ public class MovePlayer : MonoBehaviour {
         }
         transform.Rotate(Vector3.up, Time.deltaTime * turnSpeed * horizontalInput);
         // Count the player so that it is like that they are on ground 
-        //Debug.Log("Wave Height: " + WaveManager.instance.GetWaveHeight(transform.position.z));
         // Player is underwater
         float jumpMultiplier = 3f;
         if (Input.GetKey(KeyCode.Space)) {
@@ -90,10 +89,6 @@ public class MovePlayer : MonoBehaviour {
         direction = playerRb.rotation * direction; // make the direction relative to the Rigidbody
         playerRb.MovePosition(playerRb.position + direction * movementSpeed * Time.fixedDeltaTime); // using the fixed delta time as this is called from the FixedUpdate() method
     }
-
-    /*private float distanceFromCentre() { // Assuming centre is (0, 0) - temporary
-        return Mathf.Sqrt(Mathf.Pow(playerRb.position.x - centre.x, 2) + Mathf.Pow(playerRb.position.z - centre.z, 2));
-    }*/
 
     private void OnCollisionEnter(Collision collision) { // If standing on boat/island/dock, allow the player to jump
         if (collision.gameObject.CompareTag("Island") || collision.gameObject.CompareTag("Boat") || collision.gameObject.CompareTag("Dock") || collision.gameObject.CompareTag("Pirate Ship")) {

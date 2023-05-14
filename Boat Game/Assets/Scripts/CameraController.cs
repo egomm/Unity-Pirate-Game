@@ -13,6 +13,6 @@ public class CameraController : MonoBehaviour {
     // Update is called once per frame
     void LateUpdate() {
         transform.position = player.transform.position + offset;
-        transform.eulerAngles = new Vector3(90, player.transform.rotation.eulerAngles.y, 0);
+        transform.eulerAngles = new Vector3(90, player.transform.rotation.eulerAngles.y, 0); // Rotate by an extra 90 degrees due to the offset of the boat
     }
 }

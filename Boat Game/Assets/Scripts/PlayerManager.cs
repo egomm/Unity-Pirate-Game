@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayerManager : MonoBehaviour { 
     private List<float> lastAttackTimes = new List<float>();
     private List<int> pirateTypes = new List<int>();
+    public static Vector3 lastCoordinate = new Vector3(0, 0, 0);
     public static double playerHealth = 100;
     public static Vector3 playerCoordinates = new Vector3(0, 0, 0);
     private float lastRegenerationTime = 0;
@@ -18,7 +19,6 @@ public class PlayerManager : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        Debug.Log("Started");
         playerCoordinates = transform.position;
         lastDrowingTime = Time.time;
         lastRegenerationTime = Time.time;
@@ -39,6 +39,11 @@ public class PlayerManager : MonoBehaviour {
             if (centreTwoDimensionalDistance > islandRadius) { // Can't regenerate health because the player isn't in range
                 lastRegenerationTime = Time.time;
             }
+        }
+
+        if (activeSceneName == "Game") {
+            lastCoordinate = transform.position;
+            IslandManager.startingCoordinates = lastCoordinate;
         }
         
         // Make it so that the player can't regenerate health if they are in the ocean -> make sure that the player drowns instead
@@ -77,12 +82,9 @@ public class PlayerManager : MonoBehaviour {
                 if (lastAttackTimes.Count < i + 1) { 
                     lastAttackTimes.Add(0);
                     string currentPirateName = pirates[i].name.Replace("(Clone)", "");
-                    // Get the pirate type 
-                    bool hasPirateType = false;
                     int pirateType = 0;
                     if (currentPirateName != IslandManager.instance.pirateCaptain.name) {
                         GameObject[] piratesArray = IslandManager.instance.pirates;
-                        Debug.Log(piratesArray.Length);
                         for (int j = 0; j < piratesArray.Length; j++) {
                             if (currentPirateName == piratesArray[j].name) {
                                 pirateType = j + 1;
@@ -93,7 +95,6 @@ public class PlayerManager : MonoBehaviour {
                         pirateType = 5;
                     }
                     if (pirateType > 0) { // It will always add 
-                        Debug.Log("PIRATE TYPE: " + pirateType);
                         pirateTypes.Add(pirateType);
                     }
                 }

@@ -10,8 +10,6 @@ public class IslandSceneGameManager : MonoBehaviour {
         Vector3 coordinate = IslandManager.currentCentre;
         if (IslandManager.islandInformation.ContainsKey(coordinate)) {
             IslandManager.instance.CreateIslandAndOcean(coordinate);
-        } else {
-            Debug.Log("Key not found!");
         }
     }
 

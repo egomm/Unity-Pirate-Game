@@ -35,14 +35,13 @@ public class InitalisePrefab : MonoBehaviour {
 	public void ManagePrefabs() { // In this case, the ampltidue of the waves are decreasing from 1 to 0
 		GameObject[] components = GameObject.FindGameObjectsWithTag("Ocean"); // Find ALL the ocean prefabs (using tags)
 		if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget && runningDecreasing) { // Decreasing
-			Debug.Log("DECREASING!!!");
 			if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) { 
 				foreach (GameObject component in components) {
 					component.GetComponent<WaveManager>().amplitude -= 0.05f;
 				}
 				ocean.GetComponent<WaveManager>().amplitude -= 0.05f;
 				if (ocean.GetComponent<WaveManager>().amplitude > waveHeightTarget) { 
-					Invoke("ManagePrefabs", 1);
+					Invoke("ManagePrefabs", 0.5f); 
 				} else {
 					foreach (GameObject component in components) {
 						component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
@@ -58,14 +57,13 @@ public class InitalisePrefab : MonoBehaviour {
 				runningDecreasing = false;
 			}
 		} else if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget && runningIncreasing) { // Increasing
-			Debug.Log("INCREASING!");
 			if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget) { 
 				foreach (GameObject component in components) {
 					component.GetComponent<WaveManager>().amplitude += 0.05f;
 				}
 				ocean.GetComponent<WaveManager>().amplitude += 0.05f;
 				if (ocean.GetComponent<WaveManager>().amplitude < waveHeightTarget) { 
-					Invoke("ManagePrefabs", 1);
+					Invoke("ManagePrefabs", 0.5f);
 				} else {
 					foreach (GameObject component in components) {
 						component.GetComponent<WaveManager>().amplitude = waveHeightTarget;
@@ -81,6 +79,11 @@ public class InitalisePrefab : MonoBehaviour {
 				runningIncreasing = false;
 			}
 		}
+		// Make the wave speed propertional to the wave height
+		foreach (GameObject component in components) {
+			component.GetComponent<WaveManager>().speed = 2*ocean.GetComponent<WaveManager>().amplitude;
+		}
+		ocean.GetComponent<WaveManager>().speed = 2*ocean.GetComponent<WaveManager>().amplitude;
 	}
 
 	// Update is called once per frame

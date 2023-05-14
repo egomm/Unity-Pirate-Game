@@ -46,7 +46,6 @@ public class IslandManager : MonoBehaviour {
         if (SceneManager.GetActiveScene().name != "Island Scene") {
             activeIslands.Clear();
             activeIslandInformation.Clear();
-            Debug.Log("CLEAR");
         }
     }
 
@@ -285,7 +284,7 @@ public class IslandManager : MonoBehaviour {
                     }
                     if (canPlaceChest) {
                         float randomChestAngle = Random.Range(0f, 360f);
-                        int chestsGold = (int) (magnitude * Random.Range(0.5f, 1f)) + 200; // Between 200 - 1200 gold per chest (can adjust)
+                        int chestsGold = (int) (Mathf.Pow(magnitude, 1.15f) * Random.Range(0.5f, 1f)) + 200; // Between 200 - 3000 gold per chest (depedent on distance)
                         chestAngles.Add(new Vector3(0, randomChestAngle, 0));
                         chestCoordinates.Add(new Vector3(chestX, chestY, chestZ));
                         chestGold.Add(chestsGold);
@@ -340,12 +339,13 @@ public class IslandManager : MonoBehaviour {
                                 float randomPirateAngle = Random.Range(0f, 360f);
                                 GameObject pirateToSpawn;
                                 float pirateHealth = 5; 
+                                float healthAddon = Mathf.Log(magnitude/200, 2);
                                 if (Random.Range(0, 100) >= 96) {
                                     pirateToSpawn = pirateCaptain;
-                                    pirateHealth += 5;
+                                    pirateHealth += 5 + 5*healthAddon; 
                                 } else {
                                     int pirateSpawnIndex = Random.Range(0, 4); // Pick an index from [0, 1, 2, 3]
-                                    pirateHealth += (pirateSpawnIndex + 1); 
+                                    pirateHealth += (pirateSpawnIndex + 1) + (pirateSpawnIndex + 1)*healthAddon; 
                                     pirateToSpawn = pirates[pirateSpawnIndex];
                                 }
                                 // Add the health of the players
@@ -353,9 +353,6 @@ public class IslandManager : MonoBehaviour {
                                 pirateAngles.Add(new Vector3(0, randomPirateAngle, 0));
                                 pirateCoordinates.Add(pirateSpawnCoordinate);
                                 piratesToSpawn.Add(pirateToSpawn);
-                                Debug.Log("TO SPAWN? " + piratesToSpawn[0]);
-                                Debug.Log(pirates[0]);
-                                Debug.Log(pirateCaptain);
                             }
                         }
                     }
@@ -392,7 +389,6 @@ public class IslandManager : MonoBehaviour {
 
     public void CreateIsland(Vector3 coordinate) {
         currentCoordinate = coordinate;
-        Debug.Log("NEARBY ISLAND: " + coordinate.x + ", " + coordinate.y + ", " + coordinate.z);
         activeIslands.Add(coordinate);
         List<GameObject> componentsList = new List<GameObject>();
         // Spawn the island if the island isn't already spawned
@@ -451,7 +447,6 @@ public class IslandManager : MonoBehaviour {
             activePirates.Clear();
             Invoke("SpawnPirates", 0.25f);
         }
-        Debug.Log("DONE?");
     }
 
     public void SpawnPirates() {
@@ -462,10 +457,6 @@ public class IslandManager : MonoBehaviour {
             if (pirateIndex < pirateCoordinates.Count) { // Resolves out of bounds issues
                 List<float> piratesHealth = (List<float>) IslandManager.islandInformation[currentCoordinate]["pirateshealth"];
                 if (piratesHealth[pirateIndex] > 0) {  // Cannot spawn a dead pirate
-                    Debug.Log("Spawning pirate?");
-                    Debug.Log(piratesToSpawn[pirateIndex]);
-                    Debug.Log(currentCoordinate + pirateCoordinates[pirateIndex]);
-                    Debug.Log(Quaternion.Euler(pirateAngles[pirateIndex]));
                     GameObject spawnedPirate = Instantiate(piratesToSpawn[pirateIndex], currentCoordinate + pirateCoordinates[pirateIndex], Quaternion.Euler(pirateAngles[pirateIndex]));
                     activePirates.Add(spawnedPirate);
                     List<GameObject> componentsList = activeIslandInformation[currentCoordinate];
@@ -477,8 +468,6 @@ public class IslandManager : MonoBehaviour {
                     Invoke("SpawnPirates", 0.1f);
                 }
             }
-        } else {
-            Debug.Log("Island no longer exists");
         }
     }
 
@@ -494,7 +483,6 @@ public class IslandManager : MonoBehaviour {
             for (int z = min; z <= max; z++) {
                 Instantiate(ocean, new Vector3(10 * x, 0, 10 * z) + coordinate, Quaternion.identity);
                 Instantiate(seaFloor, new Vector3(10 * x, -3, 10 * z) + coordinate, Quaternion.identity);
-                //Debug.Log(new Vector3(10 * x, 0, 10 * z) + coordinate);
             }
         }
         //Instantiate(island, new Vector3(250, 0, 250), Quaternion.identity);

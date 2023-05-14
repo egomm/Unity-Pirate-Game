@@ -19,14 +19,12 @@ public class MainMenuController : MonoBehaviour {
 
     public void LoadStartScene() {
         if (SceneManager.GetActiveScene().name != "Starting Scene") {
-            Debug.Log("Loading Starting Scene");
             SceneManager.LoadScene("Starting Scene");
         }
     }
 
     public void LoadGameScene() {
         if (SceneManager.GetActiveScene().name != "Game") {
-            Debug.Log("Loading Game");
             SceneManager.LoadScene("Game");
         }
     }

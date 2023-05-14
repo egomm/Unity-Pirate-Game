@@ -24,8 +24,6 @@ public class PlayerCameraController : MonoBehaviour {
             GameObject player = GameObject.FindGameObjectsWithTag("Player")[0];
             transform.position = player.transform.position + new Vector3(0, 10, 0);
             transform.eulerAngles = new Vector3(90, player.transform.rotation.eulerAngles.y, 0);
-            /*transform.position = player.transform.position + offset;
-            transform.eulerAngles = new Vector3(90, player.transform.rotation.eulerAngles.y, 0);*/
         }
     }
 }

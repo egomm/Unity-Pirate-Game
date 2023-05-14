@@ -8,7 +8,7 @@ public class MoveBoat : MonoBehaviour
     [SerializeField] float speedMultiplier = 0;
     [SerializeField] float turnSpeed = 45;
     [SerializeField] float speed = 0;
-    [SerializeField] float maxSpeed = 4.167f;
+    [SerializeField] float maxSpeed = 4f;
     private Rigidbody playerRb;
     [SerializeField] GameObject centreOfMass;
     [SerializeField] TextMeshProUGUI speedometerText;
@@ -19,7 +19,6 @@ public class MoveBoat : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         playerRb = GetComponent<Rigidbody>();
-        Debug.Log("HERE: " + IslandManager.startingCoordinates);
         playerRb.transform.position = IslandManager.startingCoordinates;
         playerRb.transform.Rotate(IslandManager.startingAngle);
         playerRb.centerOfMass = centreOfMass.transform.position;
@@ -33,6 +32,7 @@ public class MoveBoat : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
+        maxSpeed = 4 + Mathf.Sqrt(PlayerManager.goldLooted)/100;
         // Set the position & rotation of the player riding the boat to the same as the boat
         GameObject child = gameObject.transform.Find("Idle Bandit").gameObject;
         child.transform.position = new Vector3(transform.position.x, transform.position.y+0.4f, transform.position.z);

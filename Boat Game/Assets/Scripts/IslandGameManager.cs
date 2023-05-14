@@ -5,9 +5,7 @@ using UnityEngine;
 public class IslandGameManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
-        Debug.Log("Island Game Manager");
         int islandCount = 200-IslandManager.islandInformation.Count; 
-        Debug.Log(IslandManager.instance);
         for (int i = 0; i < islandCount; i++) {
             float angle = Random.Range(0, 2*Mathf.PI); // Angle is based on from (0, 0) positive x direction 
             // To calculate magnitude, randomise an area of pi*r^2 -> pi*1000^2 then calculate a new radius with r=sqrt(area/pi)
@@ -16,7 +14,6 @@ public class IslandGameManager : MonoBehaviour {
                 i--;
             }
         }
-        Debug.Log(IslandManager.islandInformation.Count);
         // Now initalise 500 pirate ships 
         int pirateShipCount = 1000 - PirateShipManager.pirateShipCoordinates.Count;
         for (int i = 0; i < pirateShipCount; i++) {
@@ -24,16 +21,12 @@ public class IslandGameManager : MonoBehaviour {
             float magnitude = Mathf.Sqrt(Random.Range(0f, Mathf.PI*Mathf.Pow(1000, 2))/Mathf.PI); // Distance from 0, 0
             if (!PirateShipManager.instance.InitalisePirateShip(angle, magnitude)) {
                 i--;
-            } else {
-                Debug.Log("Spawned at: " + new Vector3(magnitude * Mathf.Cos(angle), 0, magnitude * Mathf.Sin(angle)));
             }
         }
-        Debug.Log(PirateShipManager.pirateShipCoordinates.Count);
     }
 
     // Update is called once per frame
     void Update() {
-    //Debug.Log(IslandManager.instance);
         GameObject boat = GameObject.FindGameObjectWithTag("Boat");
         foreach (Vector3 coordinate in PirateShipManager.pirateShipCoordinates) {
             float distance = Vector2.Distance(new Vector2(coordinate.x, coordinate.z), new Vector2(boat.transform.position.x, boat.transform.position.z));
@@ -52,7 +45,6 @@ public class IslandGameManager : MonoBehaviour {
             if (!IslandManager.instance.activeIslands.Contains(coordinate) && distance < (15 + radius)) {
                 IslandManager.instance.CreateIsland(coordinate);
             } else if (IslandManager.instance.activeIslands.Contains(coordinate) && distance > (30 + radius)) {
-                Debug.Log("NEED TO REMOVE!");
                 // Remove the island (Destroy())
                 List<GameObject> componentsList = IslandManager.instance.activeIslandInformation[coordinate];
                 IslandManager.instance.DeleteIsland(coordinate, componentsList);
@@ -84,7 +76,7 @@ public class IslandGameManager : MonoBehaviour {
             if (!InitalisePrefab.instance.runningIncreasing) {
                 InitalisePrefab.instance.runningDecreasing = false;
                 InitalisePrefab.instance.runningIncreasing = true;
-                InitalisePrefab.instance.waveHeightTarget = 0.5f; // target 
+                InitalisePrefab.instance.waveHeightTarget = Vector3.Distance(boat.transform.position, new Vector3(0, 0, 0))/1000; // target 
                 InitalisePrefab.instance.ManagePrefabs();
             }
         }
