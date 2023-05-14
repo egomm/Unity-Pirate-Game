@@ -11,14 +11,9 @@ public class WaveManager : MonoBehaviour
     public float speed = 1f;
     public float offset = 0f;
 
-
+    // Awake is called before any Start functions
     private void Awake() {
         instance = this;
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame

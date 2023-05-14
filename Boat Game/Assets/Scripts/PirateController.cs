@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PirateController : MonoBehaviour {
+    Animator pirateAnim;
+
+    void Start() {
+        pirateAnim = GetComponent<Animator>();
+    }
 
     void FixedUpdate() {
         // Check if the pirate is out of the island radius 

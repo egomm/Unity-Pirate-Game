@@ -9,7 +9,9 @@ public class StartingSceneGameManager : MonoBehaviour {
     public GameObject boat;
 
     // Start is called before the first frame update
-    void Start() { 
+    void Start() {
+        ocean.GetComponent<WaveManager>().amplitude = 0;
+        ocean.GetComponent<WaveManager>().speed = 0;
         List<Vector3> islandCoordinates = IslandManager.islandCoordinates; // static
         List<GameObject> activePirates = IslandManager.activePirates;
         Dictionary<Vector3, Dictionary<string, object>> islandInformation = IslandManager.islandInformation; // static
@@ -23,8 +25,6 @@ public class StartingSceneGameManager : MonoBehaviour {
         IslandManager.currentCentre = coordinate;
         if (IslandManager.islandInformation.ContainsKey(coordinate)) {
             IslandManager.instance.CreateIslandAndOcean(coordinate);
-        } else {
-            Debug.Log("Key not found!");
         }
     }
 

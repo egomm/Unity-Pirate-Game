@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour {
         lastFrame = (lastFrame + 1) % fpsTracker.Length; // use modulo for remainder
         fpsText.text = "FPS: " + Mathf.RoundToInt(CalculateFps()).ToString();
         goldText.text = "Gold Looted: " + AbbreviatedForms(PlayerManager.goldLooted);
-        killText.text = "Pirates Killed: " + PlayerManager.piratesKilled;
+        killText.text = "Pirates Killed: " + AbbreviatedForms(PlayerManager.piratesKilled);
     }
 
     private float CalculateFps() {
@@ -42,16 +42,20 @@ public class GameManager : MonoBehaviour {
         return fpsTracker.Length / totalTime;
     }
 
-    private string AbbreviatedForms(int number) {
+    public static string AbbreviatedForms(int number) {
         int exponent = (int) Mathf.Floor(Mathf.Log10(number));
         switch (exponent) {
             case 3: case 4: case 5: // 1k, 10k, 100k
-                return RoundToSignificantDigits(number/1e3, 4).ToString() + "k";
+                return RoundToSignificantDigits(number / 1e3, 4).ToString() + "k";
+            case 6: case 7: case 8: // 1m, 10m, 100m
+                return RoundToSignificantDigits(number / 1e6, 4).ToString() + "m";
+            case 9: case 10: case 11:
+                return RoundToSignificantDigits(number / 1e9, 4).ToString() + "b";
         }
         return number.ToString();
     }
 
-    private float RoundToSignificantDigits(double input, int digits) { // Converts to a certain amount of significant figures
+    public static float RoundToSignificantDigits(double input, int digits) { // Converts to a certain amount of significant figures
         if (input.ToString().Length < digits + 1) {
             return (float) input;
         }

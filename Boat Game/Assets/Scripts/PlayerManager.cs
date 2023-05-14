@@ -50,7 +50,7 @@ public class PlayerManager : MonoBehaviour {
         if (activeSceneName == "Island Scene" || activeSceneName == "Starting Scene" || activeSceneName == "Pirate Ship") {
             if (playerCoordinates.y < 0 && inWater) { // Player is underwater 
                 lastRegenerationTime = Time.time; // Can't regenerate
-                if ((Time.time - lastDrowingTime) > 0.5f) { // Decrease the player health by for every 0.5 seconds the player is in water
+                if ((Time.time - lastDrowingTime) > 0.25f) { // Decrease the player health by for every 0.25 seconds the player is in water
                     playerHealth--;
                     lastDrowingTime = Time.time;
                 }
@@ -63,7 +63,7 @@ public class PlayerManager : MonoBehaviour {
             }
         }
 
-        if ((Time.time-lastRegenerationTime) > 2f) { 
+        if ((Time.time-lastRegenerationTime) > 1f) { // Regenerate every second 
             if (playerHealth < 99) { 
                 playerHealth++;
             } else {
@@ -101,14 +101,14 @@ public class PlayerManager : MonoBehaviour {
                 GameObject pirate = pirates[i];
                 if (activeSceneName == "Island Scene") {
                     if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
-                        pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
+                        pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime);
+                        pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
                         if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
                             // Can attack the player if the player is visible 
-                            pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
                             if ((Time.time - lastAttackTimes[i]) >= 1f) { // can only attack once a second
-                                lastAttackTimes[i] = Time.time; 
+                                lastAttackTimes[i] = Time.time;
                                 // Attack the player 
-                                float pirateDamage = 3f + (0.6f * pirateTypes[i]); // between 3 and 6 for the damage
+                                float pirateDamage = 10f + (pirateTypes[i]) * Mathf.Log(Vector3.Distance(pirate.transform.position, new Vector3(0, 0, 0)) / 100, 1.75f); // between 10 and ~30 for the damage
                                 playerHealth -= pirateDamage;
                             }
                         }
@@ -116,19 +116,31 @@ public class PlayerManager : MonoBehaviour {
                 } else if (activeSceneName == "Pirate Ship") {
                     if (Vector3.Distance(pirate.transform.position, transform.position) < 20f && transform.position.y > 0) {
                         pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime); // make the speed depend on the pirate
+                        pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
                         if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
                             // Can attack the player if the player is visible 
-                            pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
                             if ((Time.time - lastAttackTimes[i]) >= 1f) { // can only attack once a second
-                                lastAttackTimes[i] = Time.time; 
+                                lastAttackTimes[i] = Time.time;
                                 // Attack the player 
-                                float pirateDamage = 3f + (0.6f * pirateTypes[i]); // between 3 and 6 for the damage
+                                float pirateDamage = 7.5f + (pirateTypes[i]) * Mathf.Log(Vector3.Distance(pirate.transform.position, new Vector3(0, 0, 0)) / 100, 2); // between 7.5 and ~22.5 for the damage
                                 playerHealth -= pirateDamage;
                             }
                         }
                     }
                 }
             }
+        }
+        float multiplier = 1050f;
+        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(0, 0)) > multiplier) { // If the player is more than 1050 units from (0, 0)
+            float angle = 0;
+            if (transform.position.x != 0) { // To avoid dividing my 0 
+                angle = Mathf.Atan((transform.position.z) / (transform.position.x));
+                multiplier *= (transform.position.x) / Mathf.Abs(transform.position.x);
+            }
+            // Get the new player positions based on trig
+            float newPlayerX = multiplier * Mathf.Cos(angle);
+            float newPlayerZ = multiplier * Mathf.Sin(angle);
+            transform.position = new Vector3(newPlayerX, transform.position.y, newPlayerZ);
         }
         if (playerHealth <= 0) { // If the player health is less than 0, player is dead
             SceneManager.LoadScene("Death Scene");
