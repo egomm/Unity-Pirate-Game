@@ -23,9 +23,10 @@ public class PirateController : MonoBehaviour {
                     angle = Mathf.Atan((transform.position.z - centre.z) / (transform.position.x - centre.x));
                     multiplier *= (transform.position.x - centre.x) / Mathf.Abs(transform.position.x - centre.x);
                 }
-                // Get the new player positions based on trig
+                // Get the new player positions based on trigonometry (rcos(theta) and rsin(theta))
                 float newPirateX = multiplier * Mathf.Cos(angle);
                 float newPirateZ = multiplier * Mathf.Sin(angle);
+                // Set the pirate's position to at the edge of the radius (prevents the pirate from going out of the island radius)
                 transform.position = new Vector3(newPirateX + centre.x, transform.position.y, newPirateZ + centre.z);
             }
         }

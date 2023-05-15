@@ -3,26 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour {
-    private Vector3 offset = new Vector3(0, 0, 0);
-    // Start is called before the first frame update
-    void Start() {
-        test();
-    }
 
-    void test() {
+    // Update is called once per frame - Late Update is called after update is called
+    void LateUpdate() {
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0) {
             GameObject player = GameObject.FindGameObjectsWithTag("Player")[0];
-            offset = transform.position - player.transform.position;
-        } else {
-            Invoke("test", 0.05f);
-        }
-    }
-
-    // Update is called once per frame
-    void LateUpdate() {
-        if (GameObject.FindGameObjectsWithTag("Player").Length > 0 && offset != null) {
-            GameObject player = GameObject.FindGameObjectsWithTag("Player")[0];
+            // Make sure that the camera is 10 units above the player (in the y direction)
             transform.position = player.transform.position + new Vector3(0, 10, 0);
+            // Set the camera angle to be the same as the player angle
             transform.eulerAngles = new Vector3(90, player.transform.rotation.eulerAngles.y, 0);
         }
     }

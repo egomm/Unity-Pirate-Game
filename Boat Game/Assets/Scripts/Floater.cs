@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Floater : MonoBehaviour
-{
+public class Floater : MonoBehaviour {
     public Rigidbody rigidBody;
 
     // Start is called before the first frame update

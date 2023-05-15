@@ -22,24 +22,24 @@ public class RaycastManager : MonoBehaviour {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Creates a ray from the from the camera through a screen point (in this case the mouse position)
         if (Input.GetMouseButtonDown(0)) { // If left click is pressed
             if (Physics.Raycast(ray, out hit)) {
-                if (hit.transform.tag == "Pirate") { // add distance checks
-                    if (Vector3.Distance(hit.transform.position, transform.position) < 2.5f) { // Player is within two and a half units of the pirate
-                        if ((Time.time - lastAttackTime) >= 0.25f) { // can only attack once every 250ms
+                if (hit.transform.tag == "Pirate") { 
+                    if (Vector3.Distance(hit.transform.position, transform.position) < 2.5f) { // Player is within 2 1/2 of the pirate
+                        if ((Time.time - lastAttackTime) >= 0.25f) { // The player can only attack once every 250ms
                             lastAttackTime = Time.time;
-                            // only for island scene
                             List<GameObject> pirates = new List<GameObject>();
                             List<float> piratesHealth = new List<float>();
-                            if (activeScene == "Island Scene") { // Island scene
+                            if (activeScene == "Island Scene") { // Manage the pirates in the Island Scene
                                 pirates = IslandManager.activePirates;
                                 piratesHealth = (List<float>) IslandManager.islandInformation[islandCoordinates]["pirateshealth"];
-                            } else if (activeScene == "Pirate Ship") {
+                            } else if (activeScene == "Pirate Ship") { // Manage the pirates in the Pirate Ship scene
                                 pirates = PirateShipManager.activePirates;
                                 piratesHealth = (List<float>) PirateShipManager.pirateShipInformation[pirateShipCoordinates]["pirateshealth"];
                             }
+                            // Find the pirate which the player just clicked on 
                             for (int i = 0; i < pirates.Count; i++) { 
                                 if (pirates[i] == hit.transform.gameObject) {
                                     // Attack the pirate
-                                    piratesHealth[i] -= (2+PlayerManager.piratesKilled*0.05f); // Decrease the pirate's health by 2 each time the player clicks the pirate, increases by 1 per every 5 pirates the player has killed
+                                    piratesHealth[i] -= (2+PlayerManager.piratesKilled*0.05f); // Decrease the pirate's health by 2 each time the player clicks the pirate, increases by 1 per every 20 pirates the player has killed
                                     if (piratesHealth[i] <= 0) {
                                         PlayerManager.piratesKilled++;
                                         if (activeScene == "Pirate Ship") {
@@ -88,7 +88,7 @@ public class RaycastManager : MonoBehaviour {
                         int goldToSubtract = (int) (0.1f * maxChestGold[index]);
                         if (chestGold[index] > goldToSubtract) {
                             PlayerManager.goldLooted += goldToSubtract;
-                            chestGold[index] -= goldToSubtract; // Take off 10% of max
+                            chestGold[index] -= goldToSubtract; // Take 10% of the maximum gold which the chest can store
                         } else if (chestGold[index] > 0) {
                             PlayerManager.goldLooted += chestGold[index];
                             chestGold[index] = 0;
@@ -97,9 +97,7 @@ public class RaycastManager : MonoBehaviour {
                     }
                 }
                 if (hitTag == "Pirate Ship" && activeScene == "Game") {
-                    // Hit the pirate ship
-                    // length is ~15 at 0.2 Z scale so 75 at 1 z scale
-                    // need to base this off angle
+                    // If the user right clicked on the pirate ship
                     bool hasPirateShip = false;
                     foreach (Vector3 coordinate in PirateShipManager.pirateShipCoordinates) {
                         if (coordinate == hit.transform.position) {
@@ -108,8 +106,10 @@ public class RaycastManager : MonoBehaviour {
                         }
                     }
                     if (hasPirateShip) {
+                        // Create circles around points on the pirate ship to determine if the player is within range of the pirate ship
                         float pirateShipAngle = Mathf.PI * (float) PirateShipManager.pirateShipInformation[hit.transform.position]["angle"]/180;
-                        float secondXAddon = 18.75f * 0.2f * Mathf.Sin(pirateShipAngle); // Replace the 0.2 with the pirate ship z scale 
+                        // 18.75 is an approximate for a portion of the dock at full scale (multiply by 0.2 to account for the actual scale)
+                        float secondXAddon = 18.75f * 0.2f * Mathf.Sin(pirateShipAngle); 
                         float secondZAddon = 18.75f * 0.2f * Mathf.Cos(pirateShipAngle);
                         Vector2 secondAddon = new Vector2(secondXAddon, secondZAddon);
                         float thirdXAddon = -18.75f * 0.2f * Mathf.Sin(pirateShipAngle);
@@ -126,7 +126,7 @@ public class RaycastManager : MonoBehaviour {
                 }
                 if (hitTag == "Dock" && activeScene == "Game") {
                     // Check the distance now using 3 combined radii
-                    // Need to find which coordinate this dock is connected to
+                    // Find which coordinate this dock is connected to
                     Vector3 islandCoordinate = new Vector3(0, 0, 0);
                     Vector3 dockCoordinate = new Vector3(0, 0, 0);
                     bool hasDock = false;

@@ -7,12 +7,9 @@ public class PirateSceneManager : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
+        // Create the pirate ship and ocean if the pirate ship manager has a reference to the current pirate ship coordinates
         if (PirateShipManager.pirateShipCoordinates.Contains(currentPirateShipCoordinates)) {
             PirateShipManager.instance.CreatePirateShipAndOcean(currentPirateShipCoordinates);
         }
-    }
-
-    // Update is called once per frame
-    void Update() {
     }
 }

@@ -28,8 +28,6 @@ public class PlayerManager : MonoBehaviour {
     void FixedUpdate() {
         string activeSceneName = SceneManager.GetActiveScene().name;
         playerCoordinates = transform.position;
-        // Will need to upgrade this for pirate ships
-
         // Health regeneration system - 1hp every 5 seconds 
         // Only allow for the player to regenerate if they aren't on the dock
         if (activeSceneName == "Island Scene") {
@@ -41,6 +39,7 @@ public class PlayerManager : MonoBehaviour {
             }
         }
 
+        // Always get the last coordinates in the game for when the player loads another scene then comes back to the game scene
         if (activeSceneName == "Game") {
             lastCoordinate = transform.position;
             IslandManager.startingCoordinates = lastCoordinate;
@@ -72,7 +71,7 @@ public class PlayerManager : MonoBehaviour {
             lastRegenerationTime = Time.time;
         }
 
-        if (transform.position.y > 4 && activeSceneName == "Game") { // Prevent the player from flying, sometimes the player was able to glitch up box colliders
+        if (transform.position.y > 4 && activeSceneName == "Game") { // Prevent the player from flying as sometimes the player was able to glitch up box colliders
             transform.position = new Vector3(transform.position.x, WaveManager.instance.GetWaveHeight(transform.position.z), transform.position.z);
         }
 
@@ -94,13 +93,14 @@ public class PlayerManager : MonoBehaviour {
                     } else {
                         pirateType = 5;
                     }
-                    if (pirateType > 0) { // It will always add 
+                    if (pirateType > 0) { // Add the pirate type (if it is valid)
                         pirateTypes.Add(pirateType);
                     }
                 }
                 GameObject pirate = pirates[i];
                 if (activeSceneName == "Island Scene") {
                     if (Vector3.Distance(pirate.transform.position, transform.position) < 10f) {
+                        // Make the pirate move towards and look at the player if the player is less than 10 units from the pirate
                         pirate.transform.position = Vector3.MoveTowards(pirate.transform.position, transform.position, 0.75f * Time.deltaTime);
                         pirate.transform.LookAt(new Vector3(transform.position.x, pirate.transform.position.y, transform.position.z));
                         if (Vector3.Distance(pirate.transform.position, transform.position) < 2f) { // can only attack if within 2 units of the player
@@ -130,19 +130,19 @@ public class PlayerManager : MonoBehaviour {
                 }
             }
         }
-        float multiplier = 1050f;
-        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(0, 0)) > multiplier) { // If the player is more than 1050 units from (0, 0)
+        float maximumDistance = 1050f; // Maximum distance from centre
+        if (Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(0, 0)) > maximumDistance) { // If the player is more than 1050 units from (0, 0)
             float angle = 0;
             if (transform.position.x != 0) { // To avoid dividing my 0 
                 angle = Mathf.Atan((transform.position.z) / (transform.position.x));
-                multiplier *= (transform.position.x) / Mathf.Abs(transform.position.x);
+                maximumDistance *= (transform.position.x) / Mathf.Abs(transform.position.x);
             }
-            // Get the new player positions based on trig
-            float newPlayerX = multiplier * Mathf.Cos(angle);
-            float newPlayerZ = multiplier * Mathf.Sin(angle);
+            // Get the new player positions based on trigonometry (rcos(theta) and rsin(theta))
+            float newPlayerX = maximumDistance * Mathf.Cos(angle);
+            float newPlayerZ = maximumDistance * Mathf.Sin(angle);
             transform.position = new Vector3(newPlayerX, transform.position.y, newPlayerZ);
         }
-        if (playerHealth <= 0) { // If the player health is less than 0, player is dead
+        if (playerHealth <= 0) { // If the player health is less than 0 then load the death scene as the player is dead
             SceneManager.LoadScene("Death Scene");
         }
     }

@@ -23,15 +23,6 @@ public class PirateShipManager : MonoBehaviour {
         instance = this;
     }
 
-    void Start() {
-        
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
-
     public bool InitalisePirateShip(float angle, float magnitude) {
         Vector3 pirateShipCoordinate = new Vector3(magnitude * Mathf.Cos(angle), 0, magnitude * Mathf.Sin(angle)); // y value will always be 0
         // Need to check if the pirate is in range is in range of the pirate ships/islands
@@ -46,9 +37,9 @@ public class PirateShipManager : MonoBehaviour {
                 return false; // Pirate ships must be at least 15 units from the circumfrence of any island
             }
         }
-        float pirateShipAngle = Random.Range(0f, 360f);
+        float pirateShipAngle = Random.Range(0f, 360f); // Randomise the angle of the pirate ship
         float pirateShipAngleRadians = Mathf.PI * pirateShipAngle / 180f;
-        // Initalise pirate
+        // Initalise pirate 
         List<Vector3> pirateCoordinates = new List<Vector3>();
         List<Vector3> pirateAngles = new List<Vector3>();
         List<GameObject> piratesToSpawn = new List<GameObject>();
@@ -68,26 +59,7 @@ public class PirateShipManager : MonoBehaviour {
             float randomCentreXAddon = 0;
             float randomCentreZAddon = 0;
             float randomCentreMultiplier = 4.6875f * 0.2f * randomCentreInt; 
-            if (pirateShipCoordinate.z > 0) { // this isnt working
-                randomCentreXAddon = randomCentreMultiplier * Mathf.Sin(pirateShipAngleRadians) * pirateShipCoordinate.x / Mathf.Abs(pirateShipCoordinate.x);
-                randomCentreZAddon = randomCentreMultiplier * Mathf.Cos(pirateShipAngleRadians) * pirateShipCoordinate.z / Mathf.Abs(pirateShipCoordinate.z);
-            } else {
-                randomCentreXAddon = randomCentreMultiplier * Mathf.Sin(pirateShipAngleRadians) * -pirateShipCoordinate.x / Mathf.Abs(pirateShipCoordinate.x);
-                randomCentreZAddon = randomCentreMultiplier * Mathf.Cos(pirateShipAngleRadians) * -pirateShipCoordinate.z / Mathf.Abs(pirateShipCoordinate.z);
-            }
-            if (0 <= pirateShipAngleRadians && pirateShipAngleRadians < Mathf.PI/2) {
-                randomCentreXAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Cos(pirateShipAngleRadians));
-                randomCentreZAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Sin(pirateShipAngleRadians));
-            } else if (Mathf.PI/2 <= pirateShipAngleRadians && pirateShipAngleRadians < Mathf.PI) {
-                randomCentreXAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Cos(Mathf.PI-pirateShipAngleRadians));
-                randomCentreZAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Sin(Mathf.PI-pirateShipAngleRadians));
-            } else if (Mathf.PI <= pirateShipAngleRadians && pirateShipAngleRadians < 3*Mathf.PI/2) {
-                randomCentreXAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Cos(pirateShipAngleRadians-Mathf.PI));
-                randomCentreZAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Sin(pirateShipAngleRadians-Mathf.PI));
-            } else if (3*Mathf.PI/2 <= pirateShipAngleRadians && pirateShipAngleRadians < 2*Mathf.PI) {
-                randomCentreXAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Cos(2*Mathf.PI-pirateShipAngleRadians));
-                randomCentreZAddon = randomCentreMultiplier * Mathf.Abs(Mathf.Sin(2*Mathf.PI-pirateShipAngleRadians));
-            }
+            // Determine the centre based off rsin(theta) and rcos(theta) -> they are reversed due to the rotation of the pirate ship
             randomCentreXAddon = randomCentreMultiplier * Mathf.Sin(pirateShipAngleRadians);
             randomCentreZAddon = randomCentreMultiplier * Mathf.Cos(pirateShipAngleRadians);
 
@@ -121,24 +93,26 @@ public class PirateShipManager : MonoBehaviour {
         }
         Dictionary<string, object> informationDictionary = new Dictionary<string, object>();
         pirateShipCoordinates.Add(pirateShipCoordinate);
-
+        // Add all the information to the information dictionary 
         informationDictionary.Add("angle", pirateShipAngle);
         informationDictionary.Add("piratecoordinates", pirateCoordinates);
         informationDictionary.Add("pirateangles", pirateAngles);
         informationDictionary.Add("piratestospawn", piratesToSpawn);
         informationDictionary.Add("pirateshealth", piratesHealth);
+        // Add this information dictionary to the pirate ship information
         pirateShipInformation.Add(pirateShipCoordinate, informationDictionary);
         return true;
     }
 
     public void CreatePirateShip(Vector3 coordinate, bool spawnPirates) {
+        // Method for creating a pirate ship given a coordinate and whether pirates should be spawned or not 
         List<GameObject> componentsList = new List<GameObject>();
         float pirateShipAngle = (float) pirateShipInformation[coordinate]["angle"];
         GameObject pirateShipCreated = Instantiate(pirateShip, coordinate, Quaternion.Euler(0, pirateShipAngle, 0)); 
         componentsList.Add(pirateShipCreated);
         activePirateShips.Add(coordinate);
         activePirateShipInformation.Add(coordinate, componentsList);
-        // Spawn the pirates now 
+        // Spawn the pirates 
         if (spawnPirates) {
             activePirates.Clear();
             List<GameObject> pirates = (List<GameObject>) pirateShipInformation[coordinate]["piratestospawn"];
@@ -147,7 +121,6 @@ public class PirateShipManager : MonoBehaviour {
             List<float> piratesHealth = (List<float>) PirateShipManager.pirateShipInformation[coordinate]["pirateshealth"];
             float pirateShipAngleRadians = Mathf.PI * pirateShipAngle / 180f;
             for (int i = 0; i < pirates.Count; i++) {
-                // ONLY SPAWN THE PIRATE IF IT IS ALIVE!
                 if (piratesHealth[i] > 0) {  // Cannot spawn a dead pirate
                     GameObject spawnedPirate = Instantiate(pirates[i], coordinate + pirateCoordinates[i], Quaternion.Euler(pirateAngles[i]));
                     activePirates.Add(spawnedPirate);
@@ -157,8 +130,10 @@ public class PirateShipManager : MonoBehaviour {
     }
 
     public void CreatePirateShipAndOcean(Vector3 coordinate) {
-        CreatePirateShip(coordinate, true);
+        // Method for creating a pirate ship and a surrounding ocean given a coordinate
+        CreatePirateShip(coordinate, true); 
         Instantiate(player, coordinate + new Vector3(0, 2, 0), Quaternion.identity);
+        // Iterate between the bounds of -6, and 6 -> this determines the size of the ocean around the pirate ship
         int min = -6;
         int max = 6;
         for (int x = min; x <= max; x++) {
@@ -175,12 +150,14 @@ public class PirateShipManager : MonoBehaviour {
         Vector3 boatForward = new Vector3(-Mathf.Sin(boatAngleRadians), 0f, Mathf.Cos(boatAngleRadians));
         Vector3 spawnPosition = boatRight * 10 * Mathf.Cos(boatAngleRadians) + boatForward * 10 * Mathf.Sin(boatAngleRadians);
         IslandManager.startingAngle = new Vector3(0, boatAngleDegrees, 0);
-        Instantiate(boat, boatCoordinate, Quaternion.Euler(0, boatAngleDegrees + 90, 0));
-
+        // Instatantiate the boat, add 90 degrees to account for the boat's inherit rotation
+        Instantiate(boat, boatCoordinate, Quaternion.Euler(0, boatAngleDegrees + 90, 0)); 
     }
 
     public void DeletePirateShip(Vector3 coordinate, List<GameObject> componentsList) {
+        // Method for deleting a pirate ship given a coordinate and the pirate ship's component list
         foreach (GameObject component in componentsList) {
+            // Iterate over all of the components and destory them
             Destroy(component);
         }
         activePirateShips.Remove(coordinate);

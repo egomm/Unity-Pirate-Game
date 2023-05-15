@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class MoveBoat : MonoBehaviour
-{
+public class MoveBoat : MonoBehaviour {
     [SerializeField] float speedMultiplier = 0;
     [SerializeField] float turnSpeed = 45;
     [SerializeField] float speed = 0;
