@@ -16,6 +16,9 @@ public class MainMenuController : MonoBehaviour {
         IslandManager.islandCoordinates.Clear();
         IslandManager.islandInformation.Clear();
         IslandManager.activePirates.Clear();
+        IslandManager.startingCoordinates = new Vector3(0, 0, 0);
+        IslandManager.startingAngle = new Vector3(0, 0, 0);
+        IslandManager.currentCentre = new Vector3(0, 0, 0);
         PirateShipManager.pirateShipCoordinates.Clear();
         PirateShipManager.pirateShipInformation.Clear();
         PirateShipManager.activePirates.Clear();
